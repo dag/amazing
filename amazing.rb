@@ -100,6 +100,7 @@
 # * Update widgets without an interval on start (when there is a socket)
 # * Maybe auto-include scripts from ~/.amazing/something
 # * Self-documenting widgets (list fields and options)
+# * Some widgets need to support multiple data sources
 # * More widgets, duh
 #
 # == Copying

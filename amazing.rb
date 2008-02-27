@@ -447,7 +447,7 @@ module Amazing
     end
 
     def parse_config
-      @log.info("Parsing configuration file")
+      @log.debug("Parsing configuration file")
       begin
         @config = YAML.load_file(@options[:config])
       rescue

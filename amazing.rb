@@ -387,13 +387,13 @@ module Amazing
       loop do
         @config["widgets"].each do |widget_name, settings|
           if settings["every"] && count % settings["every"] == 0
-            opts = settings["options"] || {}
             begin
-              widget = Widgets.const_get(settings["type"]).new(opts)
-              field = settings["field"] || "default"
               @screens.each do |screen, awesome|
                 @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
                 Thread.new do
+                  opts = settings["options"] || {}
+                  widget = Widgets.const_get(settings["type"]).new(opts)
+                  field = settings["field"] || "default"
                   awesome.widget_tell(widget_name, widget.__send__(field))
                 end
               end

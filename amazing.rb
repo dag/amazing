@@ -96,7 +96,6 @@
 #
 # == Todo
 #
-# * Validate existence of awesome socket
 # * Update widgets without an interval on start (when there is a socket)
 # * Maybe auto-include scripts from ~/.amazing/something
 # * Self-documenting widgets (list fields and options)
@@ -113,6 +112,7 @@
 require 'optparse'
 require 'logger'
 require 'yaml'
+require 'timeout'
 require 'thread'
 require 'pstore'
 
@@ -382,6 +382,7 @@ module Amazing
       load_scripts
       list_widgets if @options[:listwidgets]
       setup_screens
+      wait_for_sockets
       update_widgets unless @options[:update].empty?
       count = 0
       loop do
@@ -468,6 +469,21 @@ module Amazing
         end
       end
       @screens[0] = Awesome.new if @screens.empty?
+    end
+
+    def wait_for_sockets
+      @screens.each_key do |screen|
+        @log.debug("Waiting for socket for screen #{screen}")
+        begin
+          Timeout.timeout(30) do
+            sleep 1 until File.exist?("#{ENV["HOME"]}/.awesome_ctl.#{screen}")
+            @log.debug("Got socket for screen #{screen}")
+          end
+        rescue Timeout::Error
+          @log.fatal("Socket for screen #{screen} not created within 30 seconds, exiting")
+          exit 1
+        end
+      end
     end
 
     def update_widgets

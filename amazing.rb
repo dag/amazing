@@ -100,6 +100,9 @@
 # * Self-documenting widgets (list fields and options)
 # * Some widgets need to support multiple data sources
 # * Some way to do alerts, e.g. "blinking"
+# * Make widget configuration screen specific
+# * Support widgets with multiple bars and graphs (maybe wait for 2.3)
+# * The numbers on awesome_ctl are $DISPLAY IDs not screens
 # * More widgets, duh
 #
 # == Copying

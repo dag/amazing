@@ -100,6 +100,7 @@
 # * Maybe auto-include scripts from ~/.amazing/something
 # * Self-documenting widgets (list fields and options)
 # * Some widgets need to support multiple data sources
+# * Some way to do alerts, e.g. "blinking"
 # * More widgets, duh
 #
 # == Copying

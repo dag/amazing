@@ -96,7 +96,6 @@
 #
 # == Todo
 #
-# * Update widgets without an interval on start (when there is a socket)
 # * Maybe auto-include scripts from ~/.amazing/something
 # * Self-documenting widgets (list fields and options)
 # * Some widgets need to support multiple data sources
@@ -384,24 +383,13 @@ module Amazing
       list_widgets if @options[:listwidgets]
       setup_screens
       wait_for_sockets
-      update_widgets unless @options[:update].empty?
+      explicit_updates unless @options[:update].empty?
+      update_non_interval
       count = 0
       loop do
         @config["widgets"].each do |widget_name, settings|
           if settings["every"] && count % settings["every"] == 0
-            begin
-              @screens.each do |screen, awesome|
-                @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
-                Thread.new do
-                  opts = settings["options"] || {}
-                  widget = Widgets.const_get(settings["type"]).new(opts)
-                  field = settings["field"] || "default"
-                  awesome.widget_tell(widget_name, widget.__send__(field))
-                end
-              end
-            rescue WidgetError => e
-              @log.error(settings["type"]) { e.message }
-            end
+            update_widget(widget_name)
           end
         end
         count += 1
@@ -487,22 +475,41 @@ module Amazing
       end
     end
 
-    def update_widgets
+    def update_non_interval
       @config["widgets"].each do |widget_name, settings|
+        next if settings["every"]
+        update_widget(widget_name)
+      end
+    end
+
+    def explicit_updates
+      @config["widgets"].each_key do |widget_name|
         next unless @options[:update].include? widget_name
-        opts = settings["options"] || {}
-        begin
-          widget = Widgets.const_get(settings["type"]).new(opts)
-          field = settings["field"] || "default"
-          @screens.each do |screen, awesome|
-            @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
-            awesome.widget_tell(widget_name, widget.__send__(field))
-          end
-        rescue WidgetError => e
-          @log.error(settings["type"]) { e.message }
-        end
+        update_widget(widget_name, false)
       end
       exit
+    end
+
+    def update_widget(widget_name, threaded=true)
+      settings = @config["widgets"][widget_name]
+      begin
+        @screens.each do |screen, awesome|
+          @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
+          opts = settings["options"] || {}
+          field = settings["field"] || "default"
+          update = Proc.new do
+            widget = Widgets.const_get(settings["type"]).new(opts)
+            awesome.widget_tell(widget_name, widget.__send__(field))
+          end
+          if threaded
+            Thread.new &update
+          else
+            update.call
+          end
+        end
+      rescue WidgetError => e
+        @log.error(settings["type"]) { e.message }
+      end
     end
   end
 end

@@ -102,7 +102,6 @@
 # * Some way to do alerts, e.g. "blinking"
 # * Make widget configuration screen specific
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
-# * The numbers on awesome_ctl are $DISPLAY IDs not screens
 # * More widgets, duh
 #
 # == Copying
@@ -121,6 +120,23 @@ require 'pstore'
 
 module Amazing
 
+  module X11
+
+    # Parse an X11 display name
+    #
+    #   display = DisplayName.new("hostname:displaynumber.screennumber")
+    #   display.hostname #=> "hostname"
+    #   display.display  #=> "displaynumber"
+    #   display.screen   #=> "screennumber"
+    class DisplayName
+      attr_reader :hostname, :display, :screen
+
+      def initialize(display_name=ENV["DISPLAY"])
+        @hostname, @display, @screen = display_name.scan(/^(.*):(\d+)(?:\.(\d+))?$/)[0]
+      end
+    end
+  end
+
   # Communicate with awesome
   #
   #   awesome = Awesome.new
@@ -129,14 +145,15 @@ module Amazing
   #   awesome.tag_view(3)
   #   Awesome.new.client_zoom
   class Awesome
-    attr_accessor :screen
+    attr_accessor :screen, :display
 
-    def initialize(screen=0)
+    def initialize(screen=0, display=0)
       @screen = screen.to_i
+      @display = display
     end
 
     def method_missing(method, *args)
-      IO.popen("awesome-client", IO::WRONLY) do |ac|
+      IO.popen("env DISPLAY=#{display} awesome-client", IO::WRONLY) do |ac|
         ac.puts "#@screen #{method} #{args.join(' ')}"
       end
     end
@@ -371,6 +388,7 @@ module Amazing
       @args = args
       @log = Logger.new(STDOUT)
       @options = Options.new(@args)
+      @display = X11::DisplayName.new
     end
 
     def run
@@ -453,28 +471,26 @@ module Amazing
     def setup_screens
       @screens = {}
       @options[:screens].each do |screen|
-        @screens[screen.to_i] = Awesome.new(screen)
+        @screens[screen.to_i] = Awesome.new(screen, @display.display)
       end
       if @screens.empty?
         @config["screens"].each do |screen|
-          @screens[screen] = Awesome.new(screen)
+          @screens[screen] = Awesome.new(screen, @display.display)
         end
       end
       @screens[0] = Awesome.new if @screens.empty?
     end
 
     def wait_for_sockets
-      @screens.each_key do |screen|
-        @log.debug("Waiting for socket for screen #{screen}")
-        begin
-          Timeout.timeout(30) do
-            sleep 1 until File.exist?("#{ENV["HOME"]}/.awesome_ctl.#{screen}")
-            @log.debug("Got socket for screen #{screen}")
-          end
-        rescue Timeout::Error
-          @log.fatal("Socket for screen #{screen} not created within 30 seconds, exiting")
-          exit 1
+      @log.debug("Waiting for awesome control socket for display #{@display.display}")
+      begin
+        Timeout.timeout(30) do
+          sleep 1 until File.exist?("#{ENV["HOME"]}/.awesome_ctl.#{@display.display}")
+          @log.debug("Got socket for display #{@display.display}")
         end
+      rescue Timeout::Error
+        @log.fatal("Socket for display #{@display.display} not created within 30 seconds, exiting")
+        exit 1
       end
     end
 

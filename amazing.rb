@@ -123,6 +123,16 @@ module Amazing
 
   module X11
 
+    # Raised by DisplayName#new if called with empty argument, or without
+    # argument and ENV["DISPLAY"] is empty.
+    class EmptyDisplayName < ArgumentError
+    end
+
+    # Raised by DisplayName#new if format of argument or ENV["DISPLAY"] is
+    # invalid.
+    class InvalidDisplayName < ArgumentError
+    end
+
     # Parse an X11 display name
     #
     #   display = DisplayName.new("hostname:displaynumber.screennumber")
@@ -131,15 +141,15 @@ module Amazing
     #   display.screen   #=> "screennumber"
     #
     # Without arguments, reads ENV["DISPLAY"]. With empty argument or
-    # DISPLAY environment, raises RuntimeError. With invalid display name
-    # format, raises ArgumentError. 
+    # DISPLAY environment, raises EmptyDisplayName. With invalid display name
+    # format, raises InvalidDisplayName. 
     class DisplayName
       attr_reader :hostname, :display, :screen
 
       def initialize(display_name=ENV["DISPLAY"])
-        raise "No display name supplied" if ["", nil].include? display_name
+        raise EmptyDisplayName, "No display name supplied" if ["", nil].include? display_name
         @hostname, @display, @screen = display_name.scan(/^(.*):(\d+)(?:\.(\d+))?$/)[0]
-        raise ArgumentError, "Invalid display name" if @display.nil?
+        raise InvalidDisplayName, "Invalid display name" if @display.nil?
         @hostname = "localhost" if @hostname.empty?
         @screen = "0" unless @screen
       end
@@ -399,10 +409,10 @@ module Amazing
       @options = Options.new(@args)
       begin
         @display = X11::DisplayName.new
-      rescue RuntimeError => e
+      rescue X11::EmptyDisplayName => e
         @log.warn("#{e.message}, falling back on :0")
         @display = X11::DisplayName.new(":0")
-      rescue ArgumentError => e
+      rescue X11::InvalidDisplayName => e
         @log.fatal("#{e.message}, exiting")
         exit 1
       end

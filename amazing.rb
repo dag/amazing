@@ -102,6 +102,7 @@
 # * Some way to do alerts, e.g. "blinking"
 # * Make widget configuration screen specific
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
+# * Replace field concept with format string concept
 # * More widgets, duh
 #
 # == Copying

@@ -129,11 +129,19 @@ module Amazing
     #   display.hostname #=> "hostname"
     #   display.display  #=> "displaynumber"
     #   display.screen   #=> "screennumber"
+    #
+    # Without arguments, reads ENV["DISPLAY"]. With empty argument or
+    # DISPLAY environment, raises RuntimeError. With invalid display name
+    # format, raises ArgumentError. 
     class DisplayName
       attr_reader :hostname, :display, :screen
 
       def initialize(display_name=ENV["DISPLAY"])
+        raise "No display name supplied" if ["", nil].include? display_name
         @hostname, @display, @screen = display_name.scan(/^(.*):(\d+)(?:\.(\d+))?$/)[0]
+        raise ArgumentError, "Invalid display name" if @display.nil?
+        @hostname = "localhost" if @hostname.empty?
+        @screen = "0" unless @screen
       end
     end
   end
@@ -389,7 +397,15 @@ module Amazing
       @args = args
       @log = Logger.new(STDOUT)
       @options = Options.new(@args)
-      @display = X11::DisplayName.new
+      begin
+        @display = X11::DisplayName.new
+      rescue RuntimeError => e
+        @log.warn("#{e.message}, falling back on :0")
+        @display = X11::DisplayName.new(":0")
+      rescue ArgumentError => e
+        @log.fatal("#{e.message}, exiting")
+        exit 1
+      end
     end
 
     def run

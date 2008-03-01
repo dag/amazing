@@ -465,7 +465,7 @@ module Amazing
       scripts = (@options[:include] + @config["include"]).uniq
       scripts.each do |script|
         begin
-          Widgets.module_eval("require #{script.inspect}")
+          Widgets.module_eval(File.read(script))
         rescue LoadError
           @log.error("No such widget script #{script.inspect}")
         end

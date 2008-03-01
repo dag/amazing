@@ -464,9 +464,9 @@ module Amazing
     def load_scripts
       scripts = (@options[:include] + @config["include"]).uniq
       scripts.each do |script|
-        begin
+        if File.exist?(script)
           Widgets.module_eval(File.read(script))
-        rescue LoadError
+        else
           @log.error("No such widget script #{script.inspect}")
         end
       end

@@ -462,7 +462,11 @@ module Amazing
     end
 
     def load_scripts
-      scripts = (@options[:include] + @config["include"]).uniq
+      scripts = @options[:include]
+      @config["include"].each do |script|
+        script = "#{File.dirname(@options[:config])}/#{script}" if script[0] != ?/
+        scripts << script
+      end
       scripts.each do |script|
         if File.exist?(script)
           Widgets.module_eval(File.read(script))

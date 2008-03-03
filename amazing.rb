@@ -37,7 +37,7 @@
 #     identifier:
 #       type: WidgetName
 #       every: seconds
-#       field: instance method
+#       format: ruby code
 #       options:
 #         widget: foo
 #         specific: bar
@@ -52,7 +52,7 @@
 #       type: Clock
 #       every: 1
 #       options:
-#         format: %T
+#         time_format: %T
 #     tb_mail:
 #       type: Maildir
 #       options:
@@ -77,14 +77,15 @@
 # errors by raising a WidgetError and processes widget options via @options.
 # The init method is used instead of initialize. Here's an example:
 #
-#   class MyWidget < Widget
-#     description "This is my widget"
-#     attr_reader :my_field
-#     alias_method :default, :my_field
-#
-#     def init
-#       @my_field = @options["text"] || "No text configured"
-#       raise WidgetError, "oops!" if some_error?
+#   class Clock < Widget
+#     description "Displays date and time"
+#     option :time_format, "Time format as described in DATE(1)", "%R"
+#     field :time, "Formatted time"
+#     default "@time"
+# 
+#     init do
+#       @time = Time.now.strftime(@time_format)
+#       raise WidgetError, "An error occured!" if some_error?
 #     end
 #   end
 #
@@ -97,12 +98,11 @@
 # == Todo
 #
 # * Maybe auto-include scripts from ~/.amazing/something
-# * Self-documenting widgets (list fields and options)
+# * Self-documenting widgets (list fields and options) (done in widgets)
 # * Some widgets need to support multiple data sources
 # * Some way to do alerts, e.g. "blinking"
 # * Make widget configuration screen specific
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
-# * Replace field concept with format string concept
 # * More widgets, duh
 #
 # == Copying
@@ -214,22 +214,30 @@ module Amazing
   class WidgetError < Exception
   end
 
-  # Parent class for widget construction
+  # Parent class for widget construction, example:
   #
-  #   class MyWidget < Widget
-  #     description "This is my widget"
-  #     attr_reader :my_field
-  #     alias_method :default, :my_field
-  #
-  #     def init
-  #       @my_field = @options["text"] || "No text configured"
-  #       raise WidgetError, "oops!" if some_error?
+  #   class Clock < Widget
+  #     description "Displays date and time"
+  #     option :time_format, "Time format as described in DATE(1)", "%R"
+  #     field :time, "Formatted time"
+  #     default "@time"
+  # 
+  #     init do
+  #       @time = Time.now.strftime(@time_format)
+  #       raise WidgetError, "An error occured!" if some_error?
   #     end
   #   end
   class Widget
-    def initialize(opts={})
-      @options = opts
-      init if respond_to? :init
+    def initialize(identifier=nil, format=nil, opts={})
+      @identifier, @format = identifier, format
+      self.class.options.each do |key, value|
+        value = opts[key.to_s] || value[:default]
+        instance_variable_set "@#{key}".to_sym, value
+      end
+      self.class.fields.each do |key, value|
+        instance_variable_set "@#{key}".to_sym, value[:default]
+      end
+      instance_eval(&self.class.init) if self.class.init
     end
 
     def self.description(description=nil)
@@ -239,20 +247,68 @@ module Amazing
         @description
       end
     end
+
+    def self.option(name, description=nil, default=nil)
+      @options ||= {}
+      @options[name] = {:description => description, :default => default}
+    end
+
+    def self.options
+      @options || {}
+    end
+
+    def self.field(name, description=nil, default=nil)
+      @fields ||= {}
+      @fields[name] = {:description => description, :default => default}
+    end
+
+    def self.fields
+      @fields || {}
+    end
+
+    def self.default(format=nil, &block)
+      if format
+        @default = format
+      elsif block
+        @default = block
+      else
+        @default
+      end
+    end
+
+    def self.init(&block)
+      if block
+        @init = block
+      else
+        @init
+      end
+    end
+
+    def formatize
+      if @format
+        instance_eval(@format)
+      else
+        case self.class.default
+        when Proc
+          instance_eval(&self.class.default)
+        when String
+          instance_eval(self.class.default)
+        end
+      end
+    end
   end
 
   module Widgets
     class ALSA < Widget
       description "Various data for the ALSA mixer"
-      attr_reader :volume
-      alias_method :default, :volume
+      option :mixer, "ALSA mixer name", "Master"
+      field :volume, "Volume in percentage", 0
+      default "@volume"
 
-      def init
-        mixer = @options["mixer"] || "Master"
-        IO.popen("amixer get #{mixer}", IO::RDONLY) do |am|
+      init do
+        IO.popen("amixer get #@mixer", IO::RDONLY) do |am|
           out = am.read
           volumes = out.scan(/\[(\d+)%\]/).flatten
-          @volume = 0
           volumes.each {|vol| @volume += vol.to_i }
           @volume = @volume / volumes.size
         end
@@ -261,13 +317,13 @@ module Amazing
 
     class Battery < Widget
       description "Remaining battery power in percentage"
-      attr_reader :percentage
-      alias_method :default, :percentage
+      option :battery, "Battery number", 1
+      field :percentage, "Power percentage", 0
+      default "@percentage"
 
-      def init
-        battery = @options["battery"] || 1
-        batinfo = ProcFile.new("acpi/battery/BAT#{battery}/info")[0]
-        batstate = ProcFile.new("acpi/battery/BAT#{battery}/state")[0]
+      init do
+        batinfo = ProcFile.new("acpi/battery/BAT#@battery/info")[0]
+        batstate = ProcFile.new("acpi/battery/BAT#@battery/state")[0]
         remaining = batstate["remaining capacity"].to_i
         lastfull = batinfo["last full capacity"].to_i
         @percentage = (remaining * 100) / lastfull.to_f
@@ -276,24 +332,24 @@ module Amazing
 
     class Clock < Widget
       description "Displays date and time"
-      attr_reader :time
-      alias_method :default, :time
+      option :time_format, "Time format as described in DATE(1)", "%R"
+      field :time, "Formatted time"
+      default "@time"
 
-      def init
-        format = @options["format"] || "%R"
-        @time = Time.now.strftime(format)
+      init do
+        @time = Time.now.strftime(@time_format)
       end
     end
 
     class Maildir < Widget
       description "Mail count in maildirs"
-      attr_reader :count
-      alias_method :default, :count
+      option :directories, "Globs of maildirs" # TODO: does a default make sense?
+      field :count, "Ammount of mail in searched directories", 0
+      default "@count"
 
-      def init
-        @count = 0
-        raise WidgetError, "No directories configured" unless @options["directories"]
-        @options["directories"].each do |glob|
+      init do
+        raise WidgetError, "No directories configured" unless @directories
+        @directories.each do |glob|
           glob = "#{ENV["HOME"]}/#{glob}" if glob[0] != ?/
           @count += Dir["#{glob}/*"].size
         end
@@ -302,10 +358,14 @@ module Amazing
 
     class Memory < Widget
       description "Various memory related data"
-      attr_reader :total, :free, :buffers, :cached, :usage
-      alias_method :default, :usage
+      field :total, "Total kilobytes of memory", 0
+      field :free, "Free kilobytes of memory", 0
+      field :buffers, nil, 0 # TODO: description
+      field :cached, nil, 0 # TODO: description
+      field :usage, "Percentage of used memory", 0
+      default "@usage"
 
-      def init
+      init do
         meminfo = ProcFile.new("meminfo")[0]
         @total = meminfo["MemTotal"].to_i
         @free = meminfo["MemFree"].to_i
@@ -317,21 +377,20 @@ module Amazing
 
     class Raggle < Widget
       description "Unread posts in raggle"
-      attr_reader :unread
-      alias_method :default, :unread
+      option :feed_list_path, "Path to feeds list", ".raggle/feeds.yaml"
+      option :feed_cache_path, "Path to feeds cache", ".raggle/feed_cache.store"
+      field :count, "Ammount of unread posts", 0
+      default "@count"
 
-      def init
-        feed_list = @options["feed_list_path"] || ".raggle/feeds.yaml"
-        feed_list = "#{ENV["HOME"]}/#{feed_list}" if feed_list[0] != ?/
-        feeds = YAML.load_file(feed_list)
-        feed_cache = @options["feed_cache_path"] || ".raggle/feed_cache.store"
-        feed_cache = "#{ENV["HOME"]}/#{feed_cache}" if feed_cache[0] != ?/
-        cache = PStore.new(feed_cache)
-        @unread = 0
+      init do
+        @feed_list_path = "#{ENV["HOME"]}/#@feed_list_path" if @feed_list_path[0] != ?/
+        feeds = YAML.load_file(@feed_list_path)
+        @feed_cache_path = "#{ENV["HOME"]}/#{@feed_cache_path}" if @feed_cache_path[0] != ?/
+        cache = PStore.new(@feed_cache_path)
         cache.transaction(false) do
           feeds.each do |feed|
             cache[feed["url"]].each do |item|
-              @unread += 1 unless item["read?"]
+              @count += 1 unless item["read?"]
             end
           end
         end
@@ -548,8 +607,8 @@ module Amazing
           opts = settings["options"] || {}
           field = settings["field"] || "default"
           update = Proc.new do
-            widget = Widgets.const_get(settings["type"]).new(opts)
-            awesome.widget_tell(widget_name, widget.__send__(field))
+            widget = Widgets.const_get(settings["type"]).new(widget_name, settings["format"], opts)
+            awesome.widget_tell(widget_name, widget.formatize)
           end
           if threaded
             Thread.new &update

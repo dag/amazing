@@ -103,6 +103,8 @@
 # * Some way to do alerts, e.g. "blinking"
 # * Make widget configuration screen specific
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
+# * Perhaps use a single awesome-client process and keep it open
+# * Maybe keep custom widget options at same level as other options
 # * More widgets, duh
 #
 # == Copying

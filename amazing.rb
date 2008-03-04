@@ -105,6 +105,7 @@
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
 # * Perhaps use a single awesome-client process and keep it open
 # * Maybe keep custom widget options at same level as other options
+# * Dependencies system for widgets
 # * More widgets, duh
 #
 # == Copying

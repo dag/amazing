@@ -79,7 +79,7 @@
 #
 #   class Clock < Widget
 #     description "Displays date and time"
-#     dependency "some/library", "how to get the library (url, gem name...)
+#     dependency "some/library", "how to get the library (url, gem name...)"
 #     option :time_format, "Time format as described in DATE(1)", "%R"
 #     field :time, "Formatted time"
 #     default "@time"
@@ -221,7 +221,7 @@ module Amazing
   #
   #   class Clock < Widget
   #     description "Displays date and time"
-  #     dependency "some/library", "how to get the library (url, gem name...)
+  #     dependency "some/library", "how to get the library (url, gem name...)"
   #     option :time_format, "Time format as described in DATE(1)", "%R"
   #     field :time, "Formatted time"
   #     default "@time"

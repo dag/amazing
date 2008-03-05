@@ -120,7 +120,6 @@ require 'yaml'
 require 'timeout'
 require 'thread'
 require 'socket'
-require 'pstore'
 
 module Amazing
 
@@ -397,6 +396,7 @@ module Amazing
 
     class Raggle < Widget
       description "Unread posts in raggle"
+      dependency "pstore", "Ruby standard library"
       option :feed_list_path, "Path to feeds list", ".raggle/feeds.yaml"
       option :feed_cache_path, "Path to feeds cache", ".raggle/feed_cache.store"
       field :count, "Ammount of unread posts", 0

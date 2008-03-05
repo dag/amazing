@@ -103,7 +103,6 @@
 # * Some way to do alerts, e.g. "blinking"
 # * Make widget configuration screen specific
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
-# * Perhaps use a single awesome-client process and keep it open
 # * Maybe keep custom widget options at same level as other options
 # * Dependencies system for widgets
 # * More widgets, duh
@@ -120,6 +119,7 @@ require 'logger'
 require 'yaml'
 require 'timeout'
 require 'thread'
+require 'socket'
 require 'pstore'
 
 module Amazing
@@ -172,12 +172,12 @@ module Amazing
     def initialize(screen=0, display=0)
       @screen = screen.to_i
       @display = display
+      @socket = Socket.new(Socket::AF_UNIX, Socket::SOCK_DGRAM, 0)
+      @socket.connect(Socket.sockaddr_un("#{ENV["HOME"]}/.awesome_ctl.#@display"))
     end
 
     def method_missing(method, *args)
-      IO.popen("env DISPLAY=#{display} awesome-client", IO::WRONLY) do |ac|
-        ac.puts "#@screen #{method} #{args.join(' ')}"
-      end
+      @socket.write("#@screen #{method} #{args.join(' ')}\n")
     end
   end
 

@@ -79,6 +79,7 @@
 #
 #   class Clock < Widget
 #     description "Displays date and time"
+#     dependency "some/library", "how to get the library (url, gem name...)
 #     option :time_format, "Time format as described in DATE(1)", "%R"
 #     field :time, "Formatted time"
 #     default "@time"
@@ -104,7 +105,6 @@
 # * Make widget configuration screen specific
 # * Support widgets with multiple bars and graphs (maybe wait for 2.3)
 # * Maybe keep custom widget options at same level as other options
-# * Dependencies system for widgets
 # * More widgets, duh
 #
 # == Copying
@@ -221,6 +221,7 @@ module Amazing
   #
   #   class Clock < Widget
   #     description "Displays date and time"
+  #     dependency "some/library", "how to get the library (url, gem name...)
   #     option :time_format, "Time format as described in DATE(1)", "%R"
   #     field :time, "Formatted time"
   #     default "@time"
@@ -232,6 +233,13 @@ module Amazing
   #   end
   class Widget
     def initialize(identifier=nil, format=nil, opts={})
+      self.class.dependencies.each do |name, description|
+        begin
+          require name
+        rescue LoadError
+          raise WidgetError, "Missing dependency #{name.inspect}#{if description then " [#{description}]" end}"
+        end
+      end
       @identifier, @format = identifier, format
       self.class.options.each do |key, value|
         value = opts[key.to_s] || value[:default]
@@ -249,6 +257,15 @@ module Amazing
       else
         @description
       end
+    end
+
+    def self.dependency(name, description=nil)
+      @dependencies ||= {}
+      @dependencies[name] = description
+    end
+
+    def self.dependencies
+      @dependencies || {}
     end
 
     def self.option(name, description=nil, default=nil)
@@ -307,6 +324,8 @@ module Amazing
       option :mixer, "ALSA mixer name", "Master"
       field :volume, "Volume in percentage", 0
       default "@volume"
+
+      dependency "foobar", "gem install foobar"
 
       init do
         IO.popen("amixer get #@mixer", IO::RDONLY) do |am|

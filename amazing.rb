@@ -325,8 +325,6 @@ module Amazing
       field :volume, "Volume in percentage", 0
       default "@volume"
 
-      dependency "foobar", "gem install foobar"
-
       init do
         IO.popen("amixer get #@mixer", IO::RDONLY) do |am|
           out = am.read

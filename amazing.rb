@@ -73,9 +73,9 @@
 #
 # == Writing widgets
 #
-# Widgets inherit from Widget, serves data via instance methods, signalizes
-# errors by raising a WidgetError and processes widget options via @options.
-# The init method is used instead of initialize. Here's an example:
+# TODO: describe this more completely
+#
+# Example widget:
 #
 #   class Clock < Widget
 #     description "Displays date and time"

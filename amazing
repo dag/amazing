@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
+# Licensed under the Academic Free License version 3.0
+
+ruby -I `dirname $0`/lib `dirname $0`/bin/amazing $*

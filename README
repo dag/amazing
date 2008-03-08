@@ -1,0 +1,99 @@
+= amazing 
+
+an amazing widget manager for an awesome window manager
+
+  Usage: amazing [options]
+     -c, --config FILE                Configuration file (~/.amazing.yml)
+     -s, --screen ID                  Screen ID (0)
+     -l, --log-level LEVEL            Severity threshold (info)
+     -i, --include SCRIPT             Include a widgets script
+     -u, --update WIDGET              Update a widget and exit
+     -w, --list-widgets               List available widgets
+     -h, --help                       You're looking at it
+
+== Widgets
+
+* Battery: Remaining battery power in percentage
+* Maildir: Mail count in maildirs
+* ALSA: Various data for the ALSA mixer
+* Raggle: Unread posts in raggle
+* Memory: Various memory related data
+* Clock: Displays date and time
+
+== Configuration
+
+  include:
+    - list
+    - of
+    - scripts
+  screens:
+    - list
+    - of
+    - screens
+  widgets:
+    identifier:
+      type: WidgetName
+      every: seconds
+      format: ruby code
+      options:
+        widget: foo
+        specific: bar
+
+== Example
+
+  widgets:
+    pb_bat:
+      type: Battery
+      every: 10
+    tb_time:
+      type: Clock
+      every: 1
+      options:
+        time_format: %T
+    tb_mail:
+      type: Maildir
+      options:
+        directories:
+          - Mail/**/new
+          - Mail/inbox/cur
+
+In this example tb_mail doesn't have an "every" setting and is instead
+updated manually with <tt>amazing -u tb_mail</tt>, perhaps in cron after fetching
+new mail via fdm, getmail, fetchmail or similar. A good idea is also to
+update after closing your MUA such as Mutt which could be done with
+shell functions, example:
+
+  mutt() {
+    mutt $*
+    amazing -u tb_mail
+  }
+
+== Writing widgets
+
+TODO: describe this more completely
+
+Example widget:
+
+  class Clock < Widget
+    description "Displays date and time"
+    dependency "some/library", "how to get the library (url, gem name...)"
+    option :time_format, "Time format as described in DATE(1)", "%R"
+    field :time, "Formatted time"
+    default "@time"
+
+    init do
+      @time = Time.now.strftime(@time_format)
+      raise WidgetError, "An error occured!" if some_error?
+    end
+  end
+
+The ProcFile class can be used for parsing /proc files:
+
+  cpuinfo = ProcFile.new("cpuinfo")
+  cpuinfo[1]["model name"]
+  #=> "AMD Turion(tm) 64 X2 Mobile Technology TL-50"
+
+== Copying
+
+  Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
+  Licensed under the Academic Free License version 3.0

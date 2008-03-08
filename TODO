@@ -1,0 +1,10 @@
+= Todo
+
+* Maybe auto-include scripts from ~/.amazing/something
+* Self-documenting widgets (list fields and options) (done in widgets)
+* Some widgets need to support multiple data sources
+* Some way to do alerts, e.g. "blinking"
+* Make widget configuration screen specific
+* Support widgets with multiple bars and graphs (maybe wait for 2.3)
+* Maybe keep custom widget options at same level as other options
+* More widgets, duh

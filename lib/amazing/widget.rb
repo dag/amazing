@@ -76,7 +76,7 @@ module Amazing
       @fields || {}
     end
 
-    def self.default(format=nil, &block)
+    def self.default(format=nil, &block) # :yields:
       if format
         @default = format
       elsif block
@@ -86,7 +86,7 @@ module Amazing
       end
     end
 
-    def self.init(&block)
+    def self.init(&block) # :yields:
       if block
         @init = block
       else

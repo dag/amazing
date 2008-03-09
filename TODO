@@ -8,6 +8,5 @@
 * Support widgets with multiple bars and graphs (maybe wait for 2.3)
 * Maybe keep custom widget options at same level as other options
 * Use RDoc magic such as :yields: wherever useful
-* Reconnect awesome socket when lost
 * Install script, Ra{nt,ke}file, {test-,r}spec, rubygems...?
 * More widgets, duh

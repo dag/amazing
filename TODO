@@ -1,7 +1,7 @@
 = Todo
 
 * Maybe auto-include scripts from ~/.amazing/something
-* Self-documenting widgets (list fields and options) (done in widgets)
+* Improve output format of --list-widgets
 * Some widgets need to support multiple data sources
 * Some way to do alerts, e.g. "blinking"
 * Make widget configuration screen specific

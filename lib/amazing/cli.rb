@@ -92,12 +92,20 @@ module Amazing
     end
 
     def list_widgets
+      longest_widget_name = Widgets.constants.inject {|a,b| a.length > b.length ? a : b }.length
       Widgets.constants.each do |widget|
-        if description = Widgets.const_get(widget).description
-          puts "#{widget}: #{description}"
-        else
-          puts widget
+        widget_class = Widgets.const_get(widget)
+        puts "%-#{longest_widget_name}s : %s" % [widget, widget_class.description]
+        widget_class.dependencies.each do |name, description|
+          puts "#{" " * longest_widget_name}     require '#{name}' # #{description}"
         end
+        widget_class.options.each do |name, info|
+          puts "#{" " * longest_widget_name}     #{name}: <#{info[:description]}> || #{info[:default].inspect}"
+        end
+        widget_class.fields.each do |name, info|
+          puts "#{" " * longest_widget_name}     @#{name} = <#{info[:description]}> || #{info[:default].inspect}"
+        end
+        puts
       end
       exit
     end

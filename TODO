@@ -6,6 +6,5 @@
 * Some way to do alerts, e.g. "blinking"
 * Make widget configuration screen specific
 * Support widgets with multiple bars and graphs (maybe wait for 2.3)
-* Maybe keep custom widget options at same level as other options
 * Install script, Ra{nt,ke}file, {test-,r}spec, rubygems...?
 * More widgets, duh

@@ -35,9 +35,8 @@ an amazing widget manager for an awesome window manager
       type: WidgetName
       every: seconds
       format: ruby code
-      options:
-        widget: foo
-        specific: bar
+      widget: foo
+      specific: bar
 
 == Example
 
@@ -48,14 +47,12 @@ an amazing widget manager for an awesome window manager
     tb_time:
       type: Clock
       every: 1
-      options:
-        time_format: %T
+      time_format: %T
     tb_mail:
       type: Maildir
-      options:
-        directories:
-          - Mail/**/new
-          - Mail/inbox/cur
+      directories:
+        - Mail/**/new
+        - Mail/inbox/cur
 
 In this example tb_mail doesn't have an "every" setting and is instead
 updated manually with <tt>amazing -u tb_mail</tt>, perhaps in cron after fetching

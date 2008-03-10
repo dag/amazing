@@ -168,10 +168,8 @@ module Amazing
       begin
         @screens.each do |screen, awesome|
           @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
-          opts = settings["options"] || {}
-          field = settings["field"] || "default"
           update = Proc.new do
-            widget = Widgets.const_get(settings["type"]).new(widget_name, settings["format"], opts)
+            widget = Widgets.const_get(settings["type"]).new(widget_name, settings)
             awesome.widget_tell(widget_name, widget.formatize)
           end
           if threaded

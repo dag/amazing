@@ -22,7 +22,7 @@ module Amazing
   #     end
   #   end
   class Widget
-    def initialize(identifier=nil, format=nil, opts={})
+    def initialize(identifier=nil, opts={})
       self.class.dependencies.each do |name, description|
         begin
           require name
@@ -30,9 +30,11 @@ module Amazing
           raise WidgetError, "Missing dependency #{name.inspect}#{if description then " [#{description}]" end}"
         end
       end
-      @identifier, @format = identifier, format
+      @identifier = identifier
       self.class.options.each do |key, value|
-        value = opts[key.to_s] || value[:default]
+        instance_variable_set "@#{key}".to_sym, value[:default]
+      end
+      opts.each do |key, value|
         instance_variable_set "@#{key}".to_sym, value
       end
       self.class.fields.each do |key, value|

@@ -4,7 +4,6 @@ an amazing widget manager for an awesome window manager
 
   Usage: amazing [options]
      -c, --config FILE                Configuration file (~/.amazing.yml)
-     -s, --screen ID                  Screen ID (0)
      -l, --log-level LEVEL            Severity threshold (info)
      -i, --include SCRIPT             Include a widgets script
      -u, --update WIDGET              Update a widget and exit
@@ -23,36 +22,34 @@ an amazing widget manager for an awesome window manager
 == Configuration
 
   include:
-    - list
-    - of
-    - scripts
-  screens:
-    - list
-    - of
-    - screens
+    - <path/to/program.rb>
   widgets:
-    identifier:
-      type: WidgetName
-      every: seconds
-      format: ruby code
-      widget: foo
-      specific: bar
+    <screen>: 
+      <identifier>:
+        type: <WidgetName>
+        every: <seconds>
+        format: <ruby code>
+        <custom option>: <value>
 
 == Example
 
+  include:
+    - .amazing/widgets.rb
   widgets:
-    pb_bat:
-      type: Battery
-      every: 10
-    tb_time:
-      type: Clock
-      every: 1
-      time_format: %T
-    tb_mail:
-      type: Maildir
-      directories:
-        - Mail/**/new
-        - Mail/inbox/cur
+    0:
+      pb_bat:
+        type: Battery
+        every: 10
+      tb_time:
+        type: Clock
+        every: 1
+        time_format: %T
+      tb_mail:
+        type: Maildir
+        format: '"#@count new message#{@count != 1 : "s" : ""}"'
+        directories:
+          - Mail/**/new
+          - Mail/inbox/cur
 
 In this example tb_mail doesn't have an "every" setting and is instead
 updated manually with <tt>amazing -u tb_mail</tt>, perhaps in cron after fetching

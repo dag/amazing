@@ -4,7 +4,6 @@
 * Improve output format of --list-widgets
 * Some widgets need to support multiple data sources
 * Some way to do alerts, e.g. "blinking"
-* Make widget configuration screen specific
 * Support widgets with multiple bars and graphs (maybe wait for 2.3)
 * Install script, Ra{nt,ke}file, {test-,r}spec, rubygems...?
 * More widgets, duh

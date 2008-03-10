@@ -12,7 +12,6 @@ module Amazing
     def initialize(args)
       @options = {}
       @options[:config] = "#{ENV["HOME"]}/.amazing.yml"
-      @options[:screens] = []
       @options[:loglevel] = "info"
       @options[:include] = []
       @options[:update] = []
@@ -20,9 +19,6 @@ module Amazing
       @parser = OptionParser.new do |opts|
         opts.on("-c", "--config FILE", "Configuration file (~/.amazing.yml)") do |config|
           @options[:config] = config
-        end
-        opts.on("-s", "--screen ID", "Screen ID (0)") do |screen|
-          @options[:screens] << screen
         end
         opts.on("-l", "--log-level LEVEL", "Severity threshold (info)") do |level|
           @options[:loglevel] = level

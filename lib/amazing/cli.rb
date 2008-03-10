@@ -44,15 +44,17 @@ module Amazing
       parse_config
       load_scripts
       list_widgets if @options[:listwidgets]
-      setup_screens
       wait_for_sockets
+      @awesome = Awesome.new(@display.display)
       explicit_updates unless @options[:update].empty?
       update_non_interval
       count = 0
       loop do
-        @config["widgets"].each do |widget_name, settings|
-          if settings["every"] && count % settings["every"] == 0
-            update_widget(widget_name)
+        @config["widgets"].each do |screen, widgets|
+          widgets.each do |widget_name, settings|
+            if settings["every"] && count % settings["every"] == 0
+              update_widget(screen, widget_name)
+            end
           end
         end
         count += 1
@@ -119,20 +121,6 @@ module Amazing
         exit 1
       end
       @config["include"] ||= []
-      @config["screens"] ||= []
-    end
-
-    def setup_screens
-      @screens = {}
-      @options[:screens].each do |screen|
-        @screens[screen.to_i] = Awesome.new(screen, @display.display)
-      end
-      if @screens.empty?
-        @config["screens"].each do |screen|
-          @screens[screen] = Awesome.new(screen, @display.display)
-        end
-      end
-      @screens[0] = Awesome.new if @screens.empty?
     end
 
     def wait_for_sockets
@@ -149,34 +137,36 @@ module Amazing
     end
 
     def update_non_interval
-      @config["widgets"].each do |widget_name, settings|
-        next if settings["every"]
-        update_widget(widget_name)
+      @config["widgets"].each do |screen, widgets|
+        widgets.each do |widget_name, settings|
+          next if settings["every"]
+          update_widget(screen, widget_name)
+        end
       end
     end
 
     def explicit_updates
-      @config["widgets"].each_key do |widget_name|
-        next unless @options[:update].include? widget_name
-        update_widget(widget_name, false)
+      @config["widgets"].each do |screen, widgets|
+        widgets.each_key do |widget_name|
+          next unless @options[:update].include? widget_name
+          update_widget(screen, widget_name, false)
+        end
       end
       exit
     end
 
-    def update_widget(widget_name, threaded=true)
-      settings = @config["widgets"][widget_name]
+    def update_widget(screen, widget_name, threaded=true)
+      settings = @config["widgets"][screen][widget_name]
       begin
-        @screens.each do |screen, awesome|
-          @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
-          update = Proc.new do
-            widget = Widgets.const_get(settings["type"]).new(widget_name, settings)
-            awesome.widget_tell(widget_name, widget.formatize)
-          end
-          if threaded
-            Thread.new &update
-          else
-            update.call
-          end
+        @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
+        update = Proc.new do
+          widget = Widgets.const_get(settings["type"]).new(widget_name, settings)
+          @awesome.widget_tell(screen, widget_name, widget.formatize)
+        end
+        if threaded
+          Thread.new &update
+        else
+          update.call
         end
       rescue WidgetError => e
         @log.error(settings["type"]) { e.message }

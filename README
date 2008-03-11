@@ -6,6 +6,7 @@ an amazing widget manager for an awesome window manager
      -c, --config FILE                Configuration file (~/.amazing.yml)
      -l, --log-level LEVEL            Severity threshold (info)
      -i, --include SCRIPT             Include a widgets script
+         --no-auto-include            Don't auto include from ~/.amazing/*.rb
      -u, --update WIDGET              Update a widget and exit
      -w, --list-widgets               List available widgets
      -h, --help                       You're looking at it
@@ -34,7 +35,7 @@ an amazing widget manager for an awesome window manager
 == Example
 
   include:
-    - .amazing/widgets.rb
+    - /path/to/widgets.rb
   widgets:
     0:
       pb_bat:

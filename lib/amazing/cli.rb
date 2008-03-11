@@ -84,8 +84,12 @@ module Amazing
         script = "#{File.dirname(@options[:config])}/#{script}" if script[0] != ?/
         scripts << script
       end
-      scripts.each do |script|
+      if @options[:autoinclude]
+        scripts << Dir["#{ENV["HOME"]}/.amazing/*.rb"]
+      end
+      scripts.flatten.each do |script|
         if File.exist?(script)
+          @log.debug("Loading script #{script.inspect}")
           Widgets.module_eval(File.read(script))
         else
           @log.error("No such widget script #{script.inspect}")

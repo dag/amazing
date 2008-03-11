@@ -14,6 +14,7 @@ module Amazing
       @options[:config] = "#{ENV["HOME"]}/.amazing.yml"
       @options[:loglevel] = "info"
       @options[:include] = []
+      @options[:autoinclude] = true
       @options[:update] = []
       @args = args
       @parser = OptionParser.new do |opts|
@@ -25,6 +26,9 @@ module Amazing
         end
         opts.on("-i", "--include SCRIPT", "Include a widgets script") do |script|
           @options[:include] << script
+        end
+        opts.on("--no-auto-include", "Don't auto include from ~/.amazing/*.rb") do
+          @options[:autoinclude] = false
         end
         opts.on("-u", "--update WIDGET", "Update a widget and exit") do |widget|
           @options[:update] << widget

@@ -10,6 +10,7 @@ require 'amazing/proc_file'
 require 'amazing/widgets'
 require 'amazing/awesome'
 require 'timeout'
+require 'fileutils'
 require 'thread'
 
 module Amazing
@@ -36,6 +37,7 @@ module Amazing
     def run
       trap("SIGINT") do
         @log.fatal("Received SIGINT, exiting")
+        remove_pid
         exit
       end
       @options.parse
@@ -47,6 +49,7 @@ module Amazing
       wait_for_sockets
       @awesome = Awesome.new(@display.display)
       explicit_updates unless @options[:update].empty?
+      save_pid
       update_non_interval
       count = 0
       loop do
@@ -140,15 +143,6 @@ module Amazing
       end
     end
 
-    def update_non_interval
-      @config["widgets"].each do |screen, widgets|
-        widgets.each do |widget_name, settings|
-          next if settings["every"]
-          update_widget(screen, widget_name)
-        end
-      end
-    end
-
     def explicit_updates
       @config["widgets"].each do |screen, widgets|
         widgets.each_key do |widget_name|
@@ -157,6 +151,27 @@ module Amazing
         end
       end
       exit
+    end
+
+    def save_pid
+      path = "#{ENV["HOME"]}/.amazing/pids"
+      FileUtils.makedirs(path)
+      File.open("#{path}/#{@display.display}.pid", "w+") do |f|
+        f.write($$)
+      end
+    end
+
+    def remove_pid
+      File.delete("#{ENV["HOME"]}/.amazing/pids/#{@display.display}.pid") rescue Errno::ENOENT
+    end
+
+    def update_non_interval
+      @config["widgets"].each do |screen, widgets|
+        widgets.each do |widget_name, settings|
+          next if settings["every"]
+          update_widget(screen, widget_name)
+        end
+      end
     end
 
     def update_widget(screen, widget_name, threaded=true)

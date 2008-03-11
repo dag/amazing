@@ -85,7 +85,7 @@ module Amazing
         scripts << script
       end
       if @options[:autoinclude]
-        scripts << Dir["#{ENV["HOME"]}/.amazing/*.rb"]
+        scripts << Dir["#{ENV["HOME"]}/.amazing/widgets/*"]
       end
       scripts.flatten.each do |script|
         if File.exist?(script)

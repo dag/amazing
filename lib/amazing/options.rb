@@ -27,7 +27,7 @@ module Amazing
         opts.on("-i", "--include SCRIPT", "Include a widgets script") do |script|
           @options[:include] << script
         end
-        opts.on("--no-auto-include", "Don't auto include from ~/.amazing/*.rb") do
+        opts.on("--no-auto-include", "Don't auto include from ~/.amazing/widgets/") do
           @options[:autoinclude] = false
         end
         opts.on("-u", "--update WIDGET", "Update a widget and exit") do |widget|

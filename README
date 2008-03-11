@@ -84,7 +84,7 @@ Example widget:
 
 The ProcFile class can be used for parsing /proc files:
 
-  cpuinfo = ProcFile.new("cpuinfo")
+  cpuinfo = ProcFile.parse_file("cpuinfo")
   cpuinfo[1]["model name"]
   #=> "AMD Turion(tm) 64 X2 Mobile Technology TL-50"
 

@@ -13,8 +13,8 @@ module Amazing
       default "@percentage"
 
       init do
-        batinfo = ProcFile.new("acpi/battery/BAT#@battery/info")[0]
-        batstate = ProcFile.new("acpi/battery/BAT#@battery/state")[0]
+        batinfo = ProcFile.parse_file("acpi/battery/BAT#@battery/info")[0]
+        batstate = ProcFile.parse_file("acpi/battery/BAT#@battery/state")[0]
         remaining = batstate["remaining capacity"].to_i
         lastfull = batinfo["last full capacity"].to_i
         @percentage = (remaining * 100) / lastfull.to_f

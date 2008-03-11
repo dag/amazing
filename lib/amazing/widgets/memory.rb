@@ -16,7 +16,7 @@ module Amazing
       default "@usage"
 
       init do
-        meminfo = ProcFile.new("meminfo")[0]
+        meminfo = ProcFile.parse_file("meminfo")[0]
         @total = meminfo["MemTotal"].to_i
         @free = meminfo["MemFree"].to_i
         @buffers = meminfo["Buffers"].to_i

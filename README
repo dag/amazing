@@ -3,7 +3,7 @@
 an amazing widget manager for an awesome window manager
 
   Usage: amazing [options]
-     -c, --config FILE                Configuration file (~/.amazing.yml)
+     -c, --config FILE                Configuration file (~/.amazing/config.yml)
      -l, --log-level LEVEL            Severity threshold (info)
      -i, --include SCRIPT             Include a widgets script
          --no-auto-include            Don't auto include from ~/.amazing/widgets/

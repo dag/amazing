@@ -22,6 +22,7 @@ module Amazing
         content = string_or_io
       when IO
         content = string_or_io.read
+        string_or_io.close
       end
       @list = [{}]
       content.each_line do |line|

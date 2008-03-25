@@ -10,9 +10,9 @@ module Amazing
       description "Various memory related data"
       field :total, "Total kilobytes of memory", 0
       field :free, "Free kilobytes of memory", 0
-      field :buffers, nil, 0 # TODO: description
-      field :cached, nil, 0 # TODO: description
-      field :usage, "Percentage of used memory", 0
+      field :buffers, "Buffered kilobytes of memory", 0
+      field :cached, "Cached kilobytes of memory", 0
+      field :usage, "Percentage of used memory", 0.0
       default "@usage"
 
       init do

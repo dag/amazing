@@ -93,7 +93,11 @@ module Amazing
       scripts.flatten.each do |script|
         if File.exist?(script)
           @log.debug("Loading script #{script.inspect}")
-          Widgets.module_eval(File.read(script))
+          begin
+            Widgets.module_eval(File.read(script), script)
+          rescue SyntaxError => e
+            @log.error("Bad syntax in #{script} at line #{e.to_s.scan(/:(\d+)/)}")
+          end
         else
           @log.error("No such widget script #{script.inspect}")
         end

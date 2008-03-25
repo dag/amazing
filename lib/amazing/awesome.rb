@@ -17,17 +17,12 @@ module Amazing
 
     def initialize(display=0)
       @display = display
-      __setup_socket__
     end
 
     def method_missing(uicb, screen=0, *args)
       data = "#{screen} #{uicb} #{args.join(' ')}\n"
-      begin
-        @socket.write(data)
-      rescue Errno::ECONNREFUSED, Errno::ENOTCONN
-        __setup_socket__
-        @socket.write(data)
-      end
+      __setup_socket__
+      @socket.write(data)
     end
 
     private

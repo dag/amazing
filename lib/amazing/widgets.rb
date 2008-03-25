@@ -4,6 +4,7 @@
 require 'amazing/widgets/alsa'
 require 'amazing/widgets/battery'
 require 'amazing/widgets/clock'
+require 'amazing/widgets/file'
 require 'amazing/widgets/maildir'
 require 'amazing/widgets/memory'
 require 'amazing/widgets/raggle'

@@ -126,7 +126,8 @@ module Amazing
 
     def test_widget
       widget = Widgets.const_get(@options[:test])
-      instance = widget.new("test")
+      settings = YAML.load("{#{ARGV[0]}}")
+      instance = widget.new("test", settings)
       longest_field_name = widget.fields.keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
       widget.fields.keys.each do |field|
         puts "@%-#{longest_field_name}s = %s" % [field, instance.instance_variable_get("@#{field}".to_sym).inspect]

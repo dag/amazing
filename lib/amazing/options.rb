@@ -36,6 +36,9 @@ module Amazing
         opts.on("-w", "--list-widgets", "List available widgets") do
           @options[:listwidgets] = true
         end
+        opts.on("-t", "--test-widget WIDGET", "Dump field values for a widget") do |widget|
+          @options[:test] = widget
+        end
         opts.on("-h", "--help", "You're looking at it") do
           @options[:help] = true
         end

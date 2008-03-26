@@ -46,6 +46,7 @@ module Amazing
       parse_config
       load_scripts
       list_widgets if @options[:listwidgets]
+      test_widget if @options[:test]
       wait_for_sockets
       @awesome = Awesome.new(@display.display)
       explicit_updates unless @options[:update].empty?
@@ -119,6 +120,16 @@ module Amazing
           puts "#{" " * longest_widget_name}     @#{name} = <#{info[:description]}> || #{info[:default].inspect}"
         end
         puts
+      end
+      exit
+    end
+
+    def test_widget
+      widget = Widgets.const_get(@options[:test])
+      instance = widget.new("test")
+      longest_field_name = widget.fields.keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
+      widget.fields.keys.each do |field|
+        puts "@%-#{longest_field_name}s = %s" % [field, instance.instance_variable_get("@#{field}".to_sym).inspect]
       end
       exit
     end

@@ -3,4 +3,5 @@
 # Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
 # Licensed under the Academic Free License version 3.0
 
-dir="$(dirname "$0")" ruby -I "$dir/lib" "$dir/bin/amazing" "$@"
+dir="$(dirname "$0")"
+ruby -I "$dir/lib" "$dir/bin/amazing" "$@"

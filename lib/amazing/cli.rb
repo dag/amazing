@@ -232,19 +232,19 @@ module Amazing
 
     def update_widget(screen, widget_name, threaded=true)
       settings = @config["widgets"][screen][widget_name]
-      begin
-        @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
-        update = Proc.new do
+      @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
+      update = Proc.new do
+        begin
           widget = Widgets.const_get(settings["type"]).new(widget_name, settings)
           @awesome.widget_tell(screen, widget_name, widget.formatize)
+        rescue WidgetError => e
+          @log.error(settings["type"]) { e.message }
         end
-        if threaded
-          Thread.new &update
-        else
-          update.call
-        end
-      rescue WidgetError => e
-        @log.error(settings["type"]) { e.message }
+      end
+      if threaded
+        Thread.new &update
+      else
+        update.call
       end
     end
   end

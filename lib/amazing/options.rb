@@ -33,8 +33,8 @@ module Amazing
         opts.on("-u", "--update WIDGET", "Update a widget and exit") do |widget|
           @options[:update] << widget
         end
-        opts.on("-w", "--list-widgets", "List available widgets") do
-          @options[:listwidgets] = true
+        opts.on("-w", "--list-widgets [WIDGET]", "List available widgets or options and fields for a widget") do |widget|
+          @options[:listwidgets] = widget || true
         end
         opts.on("-t", "--test-widget WIDGET [OPTIONS]", "Dump field values for a widget configured with inline YAML") do |widget|
           @options[:test] = widget

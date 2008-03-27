@@ -49,7 +49,7 @@ module Amazing
       test_widget if @options[:test]
       wait_for_sockets
       @awesome = Awesome.new(@display.display)
-      explicit_updates unless @options[:update].empty?
+      explicit_updates unless @options[:update] == []
       save_pid
       update_non_interval
       count = 0
@@ -202,7 +202,7 @@ module Amazing
     def explicit_updates
       @config["widgets"].each do |screen, widgets|
         widgets.each_key do |widget_name|
-          next unless @options[:update].include? widget_name
+          next unless @options[:update] == :all || @options[:update].include?(widget_name)
           update_widget(screen, widget_name, false)
         end
       end

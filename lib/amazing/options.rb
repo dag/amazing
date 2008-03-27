@@ -30,8 +30,12 @@ module Amazing
         opts.on("--no-auto-include", "Don't auto include from ~/.amazing/widgets/") do
           @options[:autoinclude] = false
         end
-        opts.on("-u", "--update WIDGET", "Update a widget and exit") do |widget|
-          @options[:update] << widget
+        opts.on("-u", "--update [WIDGET]", "Update a widget and exit") do |widget|
+          if widget
+            @options[:update] << widget
+          else
+            @options[:update] = :all
+          end
         end
         opts.on("-w", "--list-widgets [WIDGET]", "List available widgets or options and fields for a widget") do |widget|
           @options[:listwidgets] = widget || true

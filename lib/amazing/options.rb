@@ -24,6 +24,9 @@ module Amazing
         opts.on("-l", "--log-level LEVEL", "Severity threshold (info)") do |level|
           @options[:loglevel] = level
         end
+        opts.on("-s", "--stop", "Stop the running amazing process") do
+          @options[:stop] = true
+        end
         opts.on("-i", "--include SCRIPT", "Include a widgets script") do |script|
           @options[:include] << script
         end

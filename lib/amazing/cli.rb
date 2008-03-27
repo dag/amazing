@@ -43,6 +43,7 @@ module Amazing
       @options.parse
       show_help if @options[:help]
       set_loglevel
+      stop_process if @options[:stop]
       parse_config
       load_scripts
       list_widgets if @options[:listwidgets]
@@ -80,6 +81,11 @@ module Amazing
         @log.error("Unsupported log level #{@options[:loglevel].inspect}")
         @log.level = Logger::INFO
       end
+    end
+
+    def stop_process
+      Process.kill("SIGINT", File.read("#{ENV["HOME"]}/.amazing/pids/#{@display.display}.pid").to_i) rescue Errno::ENOENT
+      exit
     end
 
     def load_scripts

@@ -8,11 +8,11 @@ module Amazing
     class File < Widget
       description "Information for a file"
       option :file, "The file to work with", ""
+      option :time_format, "Time format for timestamps as described in DATE(1)", "%c"
       field :lines, "All the lines in the file", []
       field :first, "The first line in the file", ""
       field :last, "The last line in the file", ""
       field :count, "Number of lines in the file", 0
-      field :time_format, "Time format for timestamps as described in DATE(1)", "%c"
       field :atime, "Access time", Time.now.strftime("%c")
       field :ctime, "Change time", Time.now.strftime("%c")
       field :mtime, "Modification time", Time.now.strftime("%c")

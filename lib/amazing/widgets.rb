@@ -1,6 +1,7 @@
 # Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
 # Licensed under the Academic Free License version 3.0
 
+require 'amazing/widgets/acadapter'
 require 'amazing/widgets/alsa'
 require 'amazing/widgets/battery'
 require 'amazing/widgets/clock'

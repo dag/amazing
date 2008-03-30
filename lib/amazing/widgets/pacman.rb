@@ -10,7 +10,7 @@ module Amazing
       option :pacman, "Path to the pacman program", "pacman"
       field :packages, "List of available upgrades", []
       field :count, "New package count", 0
-      default "@count"
+      default { @count }
 
       init do
         IO.popen("#@pacman --query --upgrades") do |io|

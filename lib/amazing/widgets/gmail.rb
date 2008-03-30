@@ -16,7 +16,7 @@ module Amazing
       option :verify, "Verify certificates", false
       field :messages, "List of new messages"
       field :count, "Number of new messages"
-      default "@count"
+      default { @count }
 
       init do
         http = Net::HTTP.new("mail.google.com", 443)

@@ -11,7 +11,7 @@ module Amazing
       option :feed_list_path, "Path to feeds list", ".raggle/feeds.yaml"
       option :feed_cache_path, "Path to feeds cache", ".raggle/feed_cache.store"
       field :count, "Ammount of unread posts", 0
-      default "@count"
+      default { @count }
 
       init do
         @feed_list_path = "#{ENV["HOME"]}/#@feed_list_path" if @feed_list_path[0] != ?/

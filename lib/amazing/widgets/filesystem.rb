@@ -13,7 +13,7 @@ module Amazing
       field :free, "Size of free data in MB", {}
       field :percentage, "Percentage of used space", {}
       field :device, "Device name of mount point", {}
-      default "@percentage[@mountpoint]"
+      default { @percentage[@mountpoint] }
 
       init do
         IO.popen("df") do |io|

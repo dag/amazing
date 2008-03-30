@@ -9,7 +9,7 @@ module Amazing
       description "Mail count in maildirs"
       option :directories, "Globs of maildirs" # TODO: does a default make sense?
       field :count, "Ammount of mail in searched directories", 0
-      default "@count"
+      default { @count }
 
       init do
         raise WidgetError, "No directories configured" unless @directories

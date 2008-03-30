@@ -16,7 +16,7 @@ module Amazing
       field :atime, "Access time", Time.now.strftime("%c")
       field :ctime, "Change time", Time.now.strftime("%c")
       field :mtime, "Modification time", Time.now.strftime("%c")
-      default "@last"
+      default { @last }
 
       init do
         @file = "#{ENV["HOME"]}/#@file" if @file[0] != ?/

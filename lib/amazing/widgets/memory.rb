@@ -17,7 +17,7 @@ module Amazing
       field :swap_free, "Free kilobytes of swap"
       field :swap_cached, "Cached kilobytes of swap"
       field :swap_usage, "Percentage of used swap"
-      default "@usage"
+      default { @usage }
 
       init do
         meminfo = ProcFile.parse_file("meminfo")[0]

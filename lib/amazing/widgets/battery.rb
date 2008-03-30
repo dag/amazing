@@ -9,8 +9,8 @@ module Amazing
     class Battery < Widget
       description "Remaining battery power in percentage"
       option :battery, "Battery number", 1
-      field :percentage, "Power percentage", 0
-      default "@percentage"
+      field :percentage, "Power percentage"
+      default { @percentage }
 
       init do
         batinfo = ProcFile.parse_file("acpi/battery/BAT#@battery/info")[0]

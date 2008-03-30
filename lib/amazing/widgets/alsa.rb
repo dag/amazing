@@ -9,7 +9,7 @@ module Amazing
       description "Various data for the ALSA mixer"
       option :mixer, "ALSA mixer name", "Master"
       field :volume, "Volume in percentage", 0
-      default "@volume"
+      default { @volume }
 
       init do
         IO.popen("amixer get #@mixer", IO::RDONLY) do |am|

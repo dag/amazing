@@ -10,7 +10,7 @@ module Amazing
       description "Remaining battery power in percentage"
       option :battery, "Battery number", 1
       field :percentage, "Power percentage"
-      default { @percentage }
+      default { @percentage.to_i }
 
       init do
         batinfo = ProcFile.parse_file("acpi/battery/BAT#@battery/info")[0]

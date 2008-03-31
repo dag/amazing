@@ -3,22 +3,32 @@
 an amazing widget manager for an awesome window manager
 
   Usage: amazing [options]
-     -c, --config FILE                Configuration file (~/.amazing/config.yml)
-     -l, --log-level LEVEL            Severity threshold (info)
-     -i, --include SCRIPT             Include a widgets script
-         --no-auto-include            Don't auto include from ~/.amazing/widgets/
-     -u, --update WIDGET              Update a widget and exit
-     -w, --list-widgets               List available widgets
-     -h, --help                       You're looking at it
+      -c, --config FILE                Configuration file (~/.amazing/config.yml)
+      -l, --log-level LEVEL            Severity threshold (info)
+      -s, --stop                       Stop the running amazing process
+      -i, --include SCRIPT             Include a widgets script
+          --no-auto-include            Don't auto include from ~/.amazing/widgets/
+      -u, --update [WIDGET]            Update a widget and exit
+      -w, --list-widgets [WIDGET]      List available widgets or options and fields for a widget
+      -t WIDGET [OPTIONS]              Dump field values for a widget configured with inline YAML
+          --test-widget
+      -h, --help                       You're looking at it
 
 == Widgets
 
-* Battery: Remaining battery power in percentage
-* Maildir: Mail count in maildirs
-* ALSA: Various data for the ALSA mixer
-* Raggle: Unread posts in raggle
-* Memory: Various memory related data
-* Clock: Displays date and time
+  ACAdapter  : AC adapter status
+  ALSA       : Various data for the ALSA mixer
+  Battery    : Remaining battery power in percentage
+  Clock      : Displays date and time
+  File       : Information for a file
+  Filesystem : Various filesystem information
+  GMail      : GMail checker
+  MOC        : Music On Console status
+  MPD        : MPD Information
+  Maildir    : Mail count in maildirs
+  Memory     : Various memory related data
+  Pacman     : Available upgrades in the Pacman package manager
+  Raggle     : Unread posts in raggle
 
 == Configuration
 

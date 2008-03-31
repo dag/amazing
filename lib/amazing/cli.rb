@@ -43,7 +43,7 @@ module Amazing
       @options.parse
       show_help if @options[:help]
       set_loglevel
-      stop_process if @options[:stop]
+      stop_process(true) if @options[:stop]
       parse_config
       load_scripts
       list_widgets if @options[:listwidgets]
@@ -51,6 +51,7 @@ module Amazing
       wait_for_sockets
       @awesome = Awesome.new(@display.display)
       explicit_updates unless @options[:update] == []
+      stop_process
       save_pid
       update_non_interval
       count = 0
@@ -83,9 +84,13 @@ module Amazing
       end
     end
 
-    def stop_process
-      Process.kill("SIGINT", File.read("#{ENV["HOME"]}/.amazing/pids/#{@display.display}.pid").to_i) rescue Errno::ENOENT
-      exit
+    def stop_process(quit=false)
+      begin
+        Process.kill("SIGINT", File.read("#{ENV["HOME"]}/.amazing/pids/#{@display.display}.pid").to_i) 
+        @log.warn("Killed older process") unless quit
+      rescue
+      end
+      exit if quit
     end
 
     def load_scripts

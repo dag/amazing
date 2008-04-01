@@ -179,7 +179,8 @@ module Amazing
       widget = Widgets.const_get(@options[:test])
       settings = YAML.load("{#{ARGV[0]}}")
       instance = widget.new("test", settings)
-      longest_field_name = widget.fields.keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
+      longest_field_name = widget.fields.merge({:default => nil}).keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
+      puts "@%-#{longest_field_name}s = %s" % [:default, instance.instance_variable_get(:@default).inspect]
       widget.fields.keys.sort_by {|field| field.to_s }.each do |field|
         puts "@%-#{longest_field_name}s = %s" % [field, instance.instance_variable_get("@#{field}".to_sym).inspect]
       end

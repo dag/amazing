@@ -41,6 +41,12 @@ module Amazing
         instance_variable_set "@#{key}".to_sym, value[:default]
       end
       instance_eval(&self.class.init) if self.class.init
+      @default = case self.class.default
+      when Proc
+        instance_eval(&self.class.default)
+      when String
+        instance_eval(self.class.default)
+      end
     end
 
     def self.description(description=nil)

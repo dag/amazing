@@ -19,6 +19,7 @@ an amazing widget manager for an awesome window manager
   ACAdapter  : AC adapter status
   ALSA       : Various data for the ALSA mixer
   Battery    : Remaining battery power in percentage
+  CPUInfo    : CPU Information
   Clock      : Displays date and time
   File       : Information for a file
   Filesystem : Various filesystem information

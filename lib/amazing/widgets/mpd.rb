@@ -75,17 +75,17 @@ module Amazing
       def get_socket
         @@connections ||= {}
         mpd = nil
-        unless @@connections["#@hostname:#@port"]
-          @@connections["#@hostname:#@port"] = TCPSocket.new(@hostname, @port)
-          mpd = @@connections["#@hostname:#@port"]
+        unless @@connections["#@identifier"]
+          @@connections["#@identifier"] = TCPSocket.new(@hostname, @port)
+          mpd = @@connections["#@identifier"]
           mpd.gets
           authenticate
         else
-          mpd = @@connections["#@hostname:#@port"]
+          mpd = @@connections["#@identifier"]
           mpd.puts("ping")
           unless mpd.gets
-            @@connections["#@hostname:#@port"] = TCPSocket.new(@hostname, @port)
-            mpd = @@connections["#@hostname:#@port"]
+            @@connections["#@identifier"] = TCPSocket.new(@hostname, @port)
+            mpd = @@connections["#@identifier"]
             mpd.gets
             authenticate
           end
@@ -94,7 +94,7 @@ module Amazing
       end
 
       def authenticate
-        mpd = @@connections["#@hostname:#@port"]
+        mpd = @@connections["#@identifier"]
         if @password
           mpd.puts("password #@password")
           if mpd.gets.split[0] == "ACK"
@@ -104,7 +104,7 @@ module Amazing
       end
 
       def send_command(command)
-        mpd = @@connections["#@hostname:#@port"]
+        mpd = @@connections["#@identifier"]
         mpd.puts(command.to_s)
         lines = []
         loop do

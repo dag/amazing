@@ -27,6 +27,7 @@ an amazing widget manager for an awesome window manager
   MPD        : MPD Information
   Maildir    : Mail count in maildirs
   Memory     : Various memory related data
+  NetTraffic : Network traffic information
   Pacman     : Available upgrades in the Pacman package manager
   Raggle     : Unread posts in raggle
 

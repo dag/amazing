@@ -12,6 +12,7 @@ require 'amazing/widgets/maildir'
 require 'amazing/widgets/memory'
 require 'amazing/widgets/moc'
 require 'amazing/widgets/mpd'
+require 'amazing/widgets/nettraffic'
 require 'amazing/widgets/pacman'
 require 'amazing/widgets/raggle'
 

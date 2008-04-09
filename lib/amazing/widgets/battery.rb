@@ -9,6 +9,7 @@ module Amazing
     class Battery < Widget
       description "Remaining battery power in percentage"
       option :battery, "Battery number", 1
+      field :state, "Charging state, :charged, :charging or :discharging"
       field :percentage, "Power percentage"
       default { @percentage.to_i }
 
@@ -17,6 +18,7 @@ module Amazing
         batstate = ProcFile.parse_file("acpi/battery/BAT#@battery/state")[0]
         remaining = batstate["remaining capacity"].to_i
         lastfull = batinfo["last full capacity"].to_i
+        @state = batstate["charging state"].to_sym
         @percentage = (remaining * 100) / lastfull.to_f
       end
     end

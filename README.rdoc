@@ -1,107 +1,55 @@
-= amazing 
+= An amazing widget manager for an awesome window manager
 
-an amazing widget manager for an awesome window manager
+* Feeds information to statusbars in the {awesome window manager}[http://awesome.naquadah.org/]
+* Framework for creating widgets
+* Centralized configuration
 
-  Usage: amazing [options]
-      -c, --config FILE                Configuration file (~/.amazing/config.yml)
-      -l, --log-level LEVEL            Severity threshold (info)
-      -s, --stop                       Stop the running amazing process
-      -i, --include SCRIPT             Include a widgets script
-          --no-auto-include            Don't auto include from ~/.amazing/widgets/
-      -u, --update [WIDGET]            Update a widget and exit
-      -w, --list-widgets [WIDGET]      List available widgets or options and fields for a widget
-      -t WIDGET [OPTIONS]              Dump field values for a widget configured with inline YAML
-          --test-widget
-      -h, --help                       You're looking at it
+Widgets included in the core:
 
-== Widgets
+*ACAdapter*:: AC adapter status
+*ALSA*:: Various data for the ALSA mixer
+*Battery*:: Remaining battery power in percentage
+*CPUInfo*:: CPU Information
+*CPUUsage*:: CPU usage
+*Clock*:: Displays date and time
+*File*:: Information for a file
+*Filesystem*:: Various filesystem information
+*GMail*:: GMail checker
+*MOC*:: Music On Console status
+*MPD*:: MPD Information
+*Maildir*:: Mail count in maildirs
+*Memory*:: Various memory related data
+*NetTraffic*:: Network traffic information
+*Pacman*:: Available upgrades in the Pacman package manager
+*Raggle*:: Unread posts in raggle
 
-  ACAdapter  : AC adapter status
-  ALSA       : Various data for the ALSA mixer
-  Battery    : Remaining battery power in percentage
-  CPUInfo    : CPU Information
-  CPUUsage   : CPU usage
-  Clock      : Displays date and time
-  File       : Information for a file
-  Filesystem : Various filesystem information
-  GMail      : GMail checker
-  MOC        : Music On Console status
-  MPD        : MPD Information
-  Maildir    : Mail count in maildirs
-  Memory     : Various memory related data
-  NetTraffic : Network traffic information
-  Pacman     : Available upgrades in the Pacman package manager
-  Raggle     : Unread posts in raggle
+== Installation procedures
+
+To install, see <tt>ruby setup.rb --help</tt>. Quick and dirty:
+
+  # ruby setup.rb all
+
+If you wish to install with Rubygems, build the gempackage and install it locally.
+
+  % gem build amazing.gemspec
+  # gem install amazing-0.1.gem
+
+You can also install it remotely from the Rubyforge servers (not yet).
+
+  # gem install amazing
 
 == Configuration
 
-  include:
-    - <path/to/program.rb>
-  widgets:
-    <screen>: 
-      <identifier>:
-        type: <WidgetName>
-        every: <seconds>
-        format: <ruby code>
-        <custom option>: <value>
+Configuration of amazing is {documented at the wiki}[http://github.com/dag/amazing/wikis/configuration].
 
-== Example
+== Git repositories
 
-  include:
-    - /path/to/widgets.rb
-  widgets:
-    0:
-      pb_bat:
-        type: Battery
-        every: 10
-      tb_time:
-        type: Clock
-        every: 1
-        time_format: %T
-      tb_mail:
-        type: Maildir
-        format: '"#@count new message#{@count != 1 : "s" : ""}"'
-        directories:
-          - Mail/**/new
-          - Mail/inbox/cur
-
-In this example tb_mail doesn't have an "every" setting and is instead
-updated manually with <tt>amazing -u tb_mail</tt>, perhaps in cron after fetching
-new mail via fdm, getmail, fetchmail or similar. A good idea is also to
-update after closing your MUA such as Mutt which could be done with
-shell functions, example:
-
-  mutt() {
-    mutt $*
-    amazing -u tb_mail
-  }
-
-== Writing widgets
-
-TODO: describe this more completely
-
-Example widget:
-
-  class Clock < Widget
-    description "Displays date and time"
-    dependency "some/library", "how to get the library (url, gem name...)"
-    option :time_format, "Time format as described in DATE(1)", "%R"
-    field :time, "Formatted time"
-    default "@time"
-
-    init do
-      @time = Time.now.strftime(@time_format)
-      raise WidgetError, "An error occured!" if some_error?
-    end
-  end
-
-The ProcFile class can be used for parsing /proc files:
-
-  cpuinfo = ProcFile.parse_file("cpuinfo")
-  cpuinfo[1]["model name"]
-  #=> "AMD Turion(tm) 64 X2 Mobile Technology TL-50"
+*GitHub*:: http://github.com/dag/amazing
+*Gitorious*:: http://gitorious.org/projects/amazing
 
 == Copying
 
   Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
   Licensed under the Academic Free License version 3.0
+
+See link:files/COPYING.html for full legal text.

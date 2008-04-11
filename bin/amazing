@@ -1,10 +1,8 @@
-#!/usr/bin/env ruby
+#! /usr/bin/ruby
 
 # Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
 # Licensed under the Academic Free License version 3.0
 
 require 'amazing/cli'
 
-if $0 == __FILE__
-  Amazing::CLI.new(ARGV).run
-end
+Amazing::CLI.new(ARGV).run

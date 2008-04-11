@@ -1,0 +1,18 @@
+!!! XML
+!!! Strict
+%html{html_attrs}
+  %head
+    %meta{"http-equiv" => "Content-Type", "content" => "text/html, charset=utf-8"}
+    %title amazing
+    = link_style
+  %body
+    #container
+      #nav
+        %ul
+          %li#nav-home= link_to :index, "Home"
+          %li#nav-license= link_to :license
+          %li#nav-api
+            %a{:href => "api"} API documentation
+          %li#nav-rubyforge
+            %a{:href => "http://rubyforge.org/projects/amazing"} Rubyforge project
+      #content~ yield

@@ -1,0 +1,8 @@
+# Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
+# Licensed under the Academic Free License version 3.0
+
+if Dir["warp"].empty?
+  sh "git clone git://github.com/dag/warp.git"
+end
+
+load 'warp/Rakefile'

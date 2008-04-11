@@ -20,6 +20,7 @@ an amazing widget manager for an awesome window manager
   ALSA       : Various data for the ALSA mixer
   Battery    : Remaining battery power in percentage
   CPUInfo    : CPU Information
+  CPUUsage   : CPU usage
   Clock      : Displays date and time
   File       : Information for a file
   Filesystem : Various filesystem information

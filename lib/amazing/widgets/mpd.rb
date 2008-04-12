@@ -66,7 +66,7 @@ module Amazing
           @file = song["file"]
           @shortfile = ::File.basename(@file)
           @shortfile = @shortfile[0..-::File.extname(@shortfile).length-1]
-          @percentage = pos / len.to_f * 100
+          @percentage = pos == 0 ? 0.0 : pos / len.to_f * 100
         end
       end
 

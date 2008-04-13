@@ -40,7 +40,9 @@ module Amazing
       self.class.fields.each do |key, value|
         instance_variable_set "@#{key}".to_sym, value[:default]
       end
-      instance_eval(&self.class.init) if self.class.init
+      self.class.init.each do |block|
+        instance_eval(&block)
+      end
       @default = case self.class.default
       when Proc
         instance_eval(&self.class.default)
@@ -96,7 +98,8 @@ module Amazing
 
     def self.init(&block) # :yields:
       if block
-        @init = block
+        @init ||= []
+        @init << block
       else
         @init
       end

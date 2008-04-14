@@ -5,7 +5,7 @@ require 'amazing/widget'
 
 module Amazing
   module Widgets
-    class Filesystem < Widget
+    class FileSystem < Widget
       description "Various filesystem information"
       option :mountpoint, "Mountpoint for default format", "/"
       field :size, "Total size of volume in MB", {}

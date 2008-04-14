@@ -5,7 +5,7 @@ require 'amazing/widget'
 
 module Amazing
   module Widgets
-    class GMail < Widget
+    class Gmail < Widget
       description "GMail checker"
       dependency "net/https", "Ruby standard library"
       dependency "rexml/document", "Ruby standard library"

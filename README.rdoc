@@ -6,17 +6,17 @@
 
 Widgets included in the core:
 
-*ACAdapter*:: AC adapter status
-*ALSA*:: Various data for the ALSA mixer
+*AcAdapter*:: AC adapter status
+*Alsa*:: Various data for the ALSA mixer
 *Battery*:: Remaining battery power in percentage
-*CPUInfo*:: CPU Information
-*CPUUsage*:: CPU usage
+*CpuInfo*:: CPU Information
+*CpuUsage*:: CPU usage
 *Clock*:: Displays date and time
 *File*:: Information for a file
-*Filesystem*:: Various filesystem information
-*GMail*:: GMail checker
-*MOC*:: Music On Console status
-*MPD*:: MPD Information
+*FileSystem*:: Various filesystem information
+*Gmail*:: GMail checker
+*Moc*:: Music On Console status
+*Mpd*:: MPD Information
 *Maildir*:: Mail count in maildirs
 *Memory*:: Various memory related data
 *NetTraffic*:: Network traffic information

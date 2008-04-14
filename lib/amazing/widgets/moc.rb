@@ -6,7 +6,7 @@ require 'amazing/proc_file'
 
 module Amazing
   module Widgets
-    class MOC < Widget
+    class Moc < Widget
       description "Music On Console status"
       option :mocp, "Path to mocp program", "mocp"
       field :state, "Play state, :playing, :paused or :stopped"

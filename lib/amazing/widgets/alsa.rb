@@ -5,7 +5,7 @@ require 'amazing/widget'
 
 module Amazing
   module Widgets
-    class ALSA < Widget
+    class Alsa < Widget
       description "Various data for the ALSA mixer"
       option :mixer, "ALSA mixer name", "Master"
       field :volume, "Volume in percentage", 0

@@ -8,7 +8,7 @@ module Amazing
   module Widgets
 
     # TODO: There might be more yummy stuff in /proc/cpuinfo
-    class CPUInfo < Widget
+    class CpuInfo < Widget
       description "CPU Information"
       option :cpu, "CPU number for default format (0 based)", 0
       field :speed, "CPU Speed in MHz", []

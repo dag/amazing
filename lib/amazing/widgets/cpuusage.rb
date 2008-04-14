@@ -5,7 +5,7 @@ require 'amazing/widget'
 
 module Amazing
   module Widgets
-    class CPUUsage < Widget
+    class CpuUsage < Widget
       description "CPU usage"
       option :cpu, "CPU number, 0 is all", 0
       field :usage, "Percent of CPU in use", []

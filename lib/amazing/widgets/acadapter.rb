@@ -6,7 +6,7 @@ require 'amazing/proc_file'
 
 module Amazing
   module Widgets
-    class ACAdapter < Widget
+    class AcAdapter < Widget
       description "AC adapter status"
       field :online, "Online status"
       default { @online ? "online" : "offline" }

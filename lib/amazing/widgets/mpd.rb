@@ -6,7 +6,7 @@ require 'amazing/proc_file'
 
 module Amazing
   module Widgets
-    class MPD < Widget
+    class Mpd < Widget
       description "MPD Information"
       dependency "socket", "Ruby standard library"
       option :hostname, "MPD server hostname", "localhost"

@@ -57,9 +57,9 @@ module Amazing
       update_non_interval
       count = 0
       loop do
-        @config["widgets"].each do |screen, widgets|
+        @config["awesome"].each do |screen, widgets|
           widgets.each do |widget_name, settings|
-            if settings["every"] && count % settings["every"] == 0
+            if settings["interval"] && count % settings["interval"] == 0
               update_widget(screen, widget_name)
             end
           end
@@ -213,7 +213,7 @@ module Amazing
     end
 
     def explicit_updates
-      @config["widgets"].each do |screen, widgets|
+      @config["awesome"].each do |screen, widgets|
         widgets.each_key do |widget_name|
           next unless @options[:update] == :all || @options[:update].include?(widget_name)
           update_widget(screen, widget_name, false)
@@ -235,16 +235,16 @@ module Amazing
     end
 
     def update_non_interval
-      @config["widgets"].each do |screen, widgets|
+      @config["awesome"].each do |screen, widgets|
         widgets.each do |widget_name, settings|
-          next if settings["every"]
+          next if settings["interval"]
           update_widget(screen, widget_name)
         end
       end
     end
 
     def update_widget(screen, widget_name, threaded=true)
-      settings = @config["widgets"][screen][widget_name]
+      settings = @config["awesome"][screen][widget_name]
       type = settings["type"].camel_case
       @log.debug("Updating widget #{widget_name} of type #{type} on screen #{screen}")
       update = Proc.new do

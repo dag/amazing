@@ -5,6 +5,7 @@ require 'logger'
 require 'amazing/options'
 require 'amazing/x11/display_name'
 require 'yaml'
+require 'amazing/string'
 require 'amazing/widget'
 require 'amazing/proc_file'
 require 'amazing/widgets'
@@ -124,9 +125,9 @@ module Amazing
           puts "%-#{longest_widget_name}s : %s" % [widget, widget_class.description]
         end
       else
-        widget_class = Widgets.const_get(@options[:listwidgets])
+        widget_class = Widgets.const_get(@options[:listwidgets].camel_case)
         puts
-        puts "#{@options[:listwidgets]} - #{widget_class.description}"
+        puts "#{@options[:listwidgets].camel_case} - #{widget_class.description}"
         puts
         dependencies = widget_class.dependencies
         unless dependencies.empty?
@@ -176,7 +177,7 @@ module Amazing
     end
 
     def test_widget
-      widget = Widgets.const_get(@options[:test])
+      widget = Widgets.const_get(@options[:test].camel_case)
       settings = YAML.load("{#{ARGV[0]}}")
       instance = widget.new("test", settings)
       longest_field_name = widget.fields.merge({:default => nil}).keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
@@ -244,13 +245,14 @@ module Amazing
 
     def update_widget(screen, widget_name, threaded=true)
       settings = @config["widgets"][screen][widget_name]
-      @log.debug("Updating widget #{widget_name} of type #{settings["type"]} on screen #{screen}")
+      type = settings["type"].camel_case
+      @log.debug("Updating widget #{widget_name} of type #{type} on screen #{screen}")
       update = Proc.new do
         begin
-          widget = Widgets.const_get(settings["type"]).new(widget_name, settings)
+          widget = Widgets.const_get(type).new(widget_name, settings)
           @awesome.widget_tell(screen, widget_name, widget.formatize)
         rescue WidgetError => e
-          @log.error(settings["type"]) { e.message }
+          @log.error(type) { e.message }
         end
       end
       if threaded

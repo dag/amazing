@@ -30,17 +30,20 @@ module Amazing
         request = Net::HTTP::Get.new("/mail/feed/atom")
         request.basic_auth(@username, @password)
         doc = REXML::Document.new(http.request(request).body)
-        @messages = doc.elements.to_a("//entry").map do |e|
-          {:subject => e.elements["title"].text,
-           :summary => e.elements["summary"].text,
-           :from => e.elements.to_a("author").map do |a|
-             {:name => a.elements["name"].text,
-              :email => a.elements["email"].text}
-           end[0],
-           :date => Time.xmlschema(e.elements["issued"].text),
-           :link => e.elements["link"].attributes["href"]}
+        begin
+          @messages = doc.elements.to_a("//entry").map do |e|
+            {:subject => e.elements["title"].text,
+             :summary => e.elements["summary"].text,
+             :from => e.elements.to_a("author").map do |a|
+               {:name => a.elements["name"].text,
+                :email => a.elements["email"].text}
+             end[0],
+             :date => Time.xmlschema(e.elements["issued"].text),
+             :link => e.elements["link"].attributes["href"]}
+          end
+        rescue
         end
-        @count = @messages.size
+        @count = doc.root.elements["fullcount"].text
       end
     end
   end

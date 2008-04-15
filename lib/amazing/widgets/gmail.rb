@@ -43,7 +43,7 @@ module Amazing
           end
         rescue
         end
-        @count = doc.root.elements["fullcount"].text
+        @count = doc.root.elements["fullcount"].text.to_i
       end
     end
   end

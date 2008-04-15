@@ -6,3 +6,8 @@ if Dir["warp"].empty?
 end
 
 load 'warp/Rakefile'
+
+desc "rsync changes to rubyforge.org"
+task :deploy do
+  sh "rsync -aCv public/ dag@rubyforge.org:/var/www/gforge-projects/amazing/"
+end

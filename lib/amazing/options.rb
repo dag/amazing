@@ -11,14 +11,14 @@ module Amazing
 
     def initialize(args)
       @options = {}
-      @options[:config] = "#{ENV["HOME"]}/.amazing/config.yml"
+      @options[:config] = Dir["#{ENV["HOME"]}/.amazing/config.{rb,yml,yaml}"][0]
       @options[:loglevel] = "info"
       @options[:include] = []
       @options[:autoinclude] = true
       @options[:update] = []
       @args = args
       @parser = OptionParser.new do |opts|
-        opts.on("-c", "--config FILE", "Configuration file (~/.amazing/config.yml)") do |config|
+        opts.on("-c", "--config FILE", "Configuration file (~/.amazing/config.{rb,yml,yaml})") do |config|
           @options[:config] = config
         end
         opts.on("-l", "--log-level LEVEL", "Severity threshold (info)") do |level|

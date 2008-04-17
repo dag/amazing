@@ -4,7 +4,7 @@
 require 'logger'
 require 'amazing/options'
 require 'amazing/x11/display_name'
-require 'yaml'
+require 'amazing/config'
 require 'amazing/string'
 require 'amazing/widget'
 require 'amazing/proc_file'
@@ -45,10 +45,10 @@ module Amazing
       show_help if @options[:help]
       set_loglevel
       stop_process(true) if @options[:stop]
-      parse_config
-      load_scripts
       list_widgets if @options[:listwidgets]
       test_widget if @options[:test]
+      load_scripts
+      parse_config
       wait_for_sockets
       @awesome = Awesome.new(@display.display)
       explicit_updates unless @options[:update] == []
@@ -57,10 +57,10 @@ module Amazing
       update_non_interval
       count = 0
       loop do
-        @config["awesome"].each do |screen, widgets|
-          widgets.each do |widget_name, settings|
-            if settings["interval"] && count % settings["interval"] == 0
-              update_widget(screen, widget_name)
+        @config[:awesome].each do |awesome|
+          awesome[:widgets].each do |widget|
+            if widget[:interval] && count % widget[:interval] == 0
+              update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier])
             end
           end
         end
@@ -96,10 +96,6 @@ module Amazing
 
     def load_scripts
       scripts = @options[:include]
-      @config["include"].each do |script|
-        script = "#{File.dirname(@options[:config])}/#{script}" if script[0] != ?/
-        scripts << script
-      end
       if @options[:autoinclude]
         scripts << Dir["#{ENV["HOME"]}/.amazing/widgets/*"]
       end
@@ -114,6 +110,16 @@ module Amazing
         else
           @log.error("No such widget script #{script.inspect}")
         end
+      end
+    end
+
+    def parse_config
+      @log.debug("Parsing configuration file")
+      begin
+        @config = Config.new(@options[:config])
+      rescue
+        @log.fatal("Unable to parse configuration file, exiting")
+        exit 1
       end
     end
 
@@ -179,24 +185,13 @@ module Amazing
     def test_widget
       widget = Widgets.const_get(@options[:test].camel_case)
       settings = YAML.load("{#{ARGV[0]}}")
-      instance = widget.new("test", settings)
+      instance = widget.new(settings)
       longest_field_name = widget.fields.merge({:default => nil}).keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
       puts "@%-#{longest_field_name}s = %s" % [:default, instance.instance_variable_get(:@default).inspect]
       widget.fields.keys.sort_by {|field| field.to_s }.each do |field|
         puts "@%-#{longest_field_name}s = %s" % [field, instance.instance_variable_get("@#{field}".to_sym).inspect]
       end
       exit
-    end
-
-    def parse_config
-      @log.debug("Parsing configuration file")
-      begin
-        @config = YAML.load_file(@options[:config])
-      rescue
-        @log.fatal("Unable to parse configuration file, exiting")
-        exit 1
-      end
-      @config["include"] ||= []
     end
 
     def wait_for_sockets
@@ -213,10 +208,11 @@ module Amazing
     end
 
     def explicit_updates
-      @config["awesome"].each do |screen, widgets|
-        widgets.each_key do |widget_name|
-          next unless @options[:update] == :all || @options[:update].include?(widget_name)
-          update_widget(screen, widget_name, false)
+      @config[:awesome].each do |awesome|
+        awesome[:widgets].each do |widget|
+          locator = "%s/%s/%s" % [widget[:identifier], awesome[:statusbar], awesome[:screen]]
+          next unless @options[:update] == :all || @options[:update].include?(locator)
+          update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier], false)
         end
       end
       exit
@@ -235,30 +231,39 @@ module Amazing
     end
 
     def update_non_interval
-      @config["awesome"].each do |screen, widgets|
-        widgets.each do |widget_name, settings|
-          next if settings["interval"]
-          update_widget(screen, widget_name)
+      @config[:awesome].each do |awesome|
+        awesome[:widgets].each do |widget|
+          next if widget[:interval]
+          update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier], false)
         end
       end
     end
 
-    def update_widget(screen, widget_name, threaded=true)
-      settings = @config["awesome"][screen][widget_name]
-      type = settings["type"].camel_case
-      @log.debug("Updating widget #{widget_name} of type #{type} on screen #{screen}")
-      update = Proc.new do
-        begin
-          widget = Widgets.const_get(type).new(widget_name, settings)
-          @awesome.widget_tell(screen, widget_name, widget.formatize)
-        rescue WidgetError => e
-          @log.error(type) { e.message }
+    def update_widget(screen, statusbar, identifier, threaded=true)
+      @config[:awesome].each do |awesome|
+        next unless screen == awesome[:screen] && statusbar == awesome[:statusbar]
+        awesome[:widgets].each do |widget|
+          next unless widget[:identifier] == identifier
+          @log.debug("Updating widget #{identifier} of type #{widget[:module]} on screen #{screen}")
+          update = Proc.new do
+            begin
+              mod = Widgets.const_get(widget[:module]).new(widget)
+              if widget[:properties].empty?
+                @awesome.widget_tell(screen, statusbar, identifier, widget[:property], mod.formatize)
+              end
+              widget[:properties].each do |property, format|
+                @awesome.widget_tell(screen, statusbar, identifier, property, mod.formatize(format))
+              end
+            rescue WidgetError => e
+              @log.error(widget[:module]) { e.message }
+            end
+          end
+          if threaded
+            Thread.new &update
+          else
+            update.call
+          end
         end
-      end
-      if threaded
-        Thread.new &update
-      else
-        update.call
       end
     end
   end

@@ -1,4 +1,5 @@
 require 'amazing/config/dsl/awesome'
+require 'amazing/numeric'
 
 module Amazing
   class Config < Hash

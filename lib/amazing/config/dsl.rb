@@ -7,12 +7,16 @@ module Amazing
 
       def initialize(config=nil, &block)
         @awesome_statusbars = []
+        @relative_path = File.dirname(config)
         import(config)
         import(&block)
       end
 
       def import(config=nil, &block)
-        instance_eval(File.read(config)) if config
+        if config
+          config = "#@relative_path/#{config}" if config[0] != ?/
+          instance_eval(File.read(config))
+        end
         instance_eval(&block) if block
       end
 

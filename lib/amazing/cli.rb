@@ -65,7 +65,7 @@ module Amazing
             @threads << Thread.new(awesome, widget) do |awesome, widget|
               iteration = 1
               loop do
-                Thread.new { update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier], iteration) }
+                Thread.new { update_widget(awesome[:screen], awesome[:statusbar], widget, iteration) }
                 iteration += 1
                 sleep widget[:interval]
               end
@@ -220,7 +220,7 @@ module Amazing
           locator = "%s/%s/%s" % [widget[:identifier], awesome[:statusbar], awesome[:screen]]
           next unless @options[:update] == :all || @options[:update].include?(locator)
           @threads << Thread.new(awesome, widget) do |awesome, widget|
-            update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier])
+            update_widget(awesome[:screen], awesome[:statusbar], widget)
           end
         end
       end
@@ -245,36 +245,26 @@ module Amazing
         awesome[:widgets].each do |widget|
           next if widget[:interval]
           @threads << Thread.new(awesome, widget) do |awesome, widget|
-            update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier])
+            update_widget(awesome[:screen], awesome[:statusbar], widget)
           end
         end
       end
       @threads.each {|t| t.join }
     end
 
-    def update_widget(screen, statusbar, identifier, iteration=0)
-      threads = []
-      @config[:awesome].each do |awesome|
-        next unless screen == awesome[:screen] && statusbar == awesome[:statusbar]
-        awesome[:widgets].each do |widget|
-          next unless widget[:identifier] == identifier
-          @log.debug("Updating widget #{identifier} of type #{widget[:module]} on screen #{screen}")
-          threads << Thread.new(widget) do |widget|
-            begin
-              mod = Widgets.const_get(widget[:module]).new(widget.merge(:iteration => iteration))
-              if widget[:properties].empty?
-                @awesome.widget_tell(screen, statusbar, identifier, widget[:property], mod.formatize)
-              end
-              widget[:properties].each do |property, format|
-                @awesome.widget_tell(screen, statusbar, identifier, property, mod.formatize(format))
-              end
-            rescue WidgetError => e
-              @log.error(widget[:module]) { e.message }
-            end
-          end
+    def update_widget(screen, statusbar, widget, iteration=0)
+      @log.debug("Updating widget #{widget[:identifier]} of type #{widget[:module]} on screen #{screen}")
+      begin
+        mod = Widgets.const_get(widget[:module]).new(widget.merge(:iteration => iteration))
+        if widget[:properties].empty?
+          @awesome.widget_tell(screen, statusbar, widget[:identifier], widget[:property], mod.formatize)
         end
+        widget[:properties].each do |property, format|
+          @awesome.widget_tell(screen, statusbar, widget[:identifier], property, mod.formatize(format))
+        end
+      rescue WidgetError => e
+        @log.error(widget[:module]) { e.message }
       end
-      threads.each {|t| t.join }
     end
   end
 end

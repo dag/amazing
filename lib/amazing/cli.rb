@@ -37,12 +37,10 @@ module Amazing
     end
 
     def run
-      at_exit do
-        remove_pid
-        Thread.list.each {|t| t.exit }
-      end
+      at_exit { Thread.list.each {|t| t.exit } }
       trap("SIGINT") do
         @log.fatal("Received SIGINT, exiting")
+        remove_pid
         exit
       end
       @options.parse

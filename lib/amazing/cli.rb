@@ -63,8 +63,10 @@ module Amazing
         awesome[:widgets].each do |widget|
           if widget[:interval]
             @threads << Thread.new(awesome, widget) do |awesome, widget|
+              iteration = 1
               loop do
-                Thread.new { update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier]) }
+                Thread.new { update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier], iteration) }
+                iteration += 1
                 sleep widget[:interval]
               end
             end
@@ -250,7 +252,7 @@ module Amazing
       @threads.each {|t| t.join }
     end
 
-    def update_widget(screen, statusbar, identifier)
+    def update_widget(screen, statusbar, identifier, iteration=0)
       threads = []
       @config[:awesome].each do |awesome|
         next unless screen == awesome[:screen] && statusbar == awesome[:statusbar]
@@ -259,7 +261,7 @@ module Amazing
           @log.debug("Updating widget #{identifier} of type #{widget[:module]} on screen #{screen}")
           threads << Thread.new(widget) do |widget|
             begin
-              mod = Widgets.const_get(widget[:module]).new(widget)
+              mod = Widgets.const_get(widget[:module]).new(widget.merge(:iteration => iteration))
               if widget[:properties].empty?
                 @awesome.widget_tell(screen, statusbar, identifier, widget[:property], mod.formatize)
               end

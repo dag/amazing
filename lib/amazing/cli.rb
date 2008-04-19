@@ -33,12 +33,16 @@ module Amazing
         @log.fatal("#{e.message}, exiting")
         exit 1
       end
+      @threads = []
     end
 
     def run
+      at_exit do
+        remove_pid
+        Thread.list.each {|t| t.exit }
+      end
       trap("SIGINT") do
         @log.fatal("Received SIGINT, exiting")
-        remove_pid
         exit
       end
       @options.parse
@@ -55,18 +59,19 @@ module Amazing
       stop_process
       save_pid
       update_non_interval
-      count = 0
-      loop do
-        @config[:awesome].each do |awesome|
-          awesome[:widgets].each do |widget|
-            if widget[:interval] && count % widget[:interval] == 0
-              update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier])
+      @config[:awesome].each do |awesome|
+        awesome[:widgets].each do |widget|
+          if widget[:interval]
+            @threads << Thread.new(awesome, widget) do |awesome, widget|
+              loop do
+                Thread.new { update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier]) }
+                sleep widget[:interval]
+              end
             end
           end
         end
-        count += 1
-        sleep 1
       end
+      @threads.each {|t| t.join }
     end
 
     private
@@ -212,9 +217,12 @@ module Amazing
         awesome[:widgets].each do |widget|
           locator = "%s/%s/%s" % [widget[:identifier], awesome[:statusbar], awesome[:screen]]
           next unless @options[:update] == :all || @options[:update].include?(locator)
-          update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier], false)
+          @threads << Thread.new(awesome, widget) do |awesome, widget|
+            update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier])
+          end
         end
       end
+      @threads.each {|t| t.join }
       exit
     end
 
@@ -234,18 +242,22 @@ module Amazing
       @config[:awesome].each do |awesome|
         awesome[:widgets].each do |widget|
           next if widget[:interval]
-          update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier], false)
+          @threads << Thread.new(awesome, widget) do |awesome, widget|
+            update_widget(awesome[:screen], awesome[:statusbar], widget[:identifier])
+          end
         end
       end
+      @threads.each {|t| t.join }
     end
 
-    def update_widget(screen, statusbar, identifier, threaded=true)
+    def update_widget(screen, statusbar, identifier)
+      threads = []
       @config[:awesome].each do |awesome|
         next unless screen == awesome[:screen] && statusbar == awesome[:statusbar]
         awesome[:widgets].each do |widget|
           next unless widget[:identifier] == identifier
           @log.debug("Updating widget #{identifier} of type #{widget[:module]} on screen #{screen}")
-          update = Proc.new do
+          threads << Thread.new(widget) do |widget|
             begin
               mod = Widgets.const_get(widget[:module]).new(widget)
               if widget[:properties].empty?
@@ -258,13 +270,9 @@ module Amazing
               @log.error(widget[:module]) { e.message }
             end
           end
-          if threaded
-            Thread.new &update
-          else
-            update.call
-          end
         end
       end
+      threads.each {|t| t.join }
     end
   end
 end

@@ -45,9 +45,9 @@ module Amazing
       show_help if @options[:help]
       set_loglevel
       stop_process(true) if @options[:stop]
+      load_scripts
       list_widgets if @options[:listwidgets]
       test_widget if @options[:test]
-      load_scripts
       parse_config
       wait_for_sockets
       @awesome = Awesome.new(@display.display)

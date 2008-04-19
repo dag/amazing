@@ -257,10 +257,10 @@ module Amazing
       begin
         mod = Widgets.const_get(widget[:module]).new(widget.merge(:iteration => iteration))
         if widget[:properties].empty?
-          @awesome.widget_tell(screen, statusbar, widget[:identifier], widget[:property], mod.formatize)
+          Thread.new { @awesome.widget_tell(screen, statusbar, widget[:identifier], widget[:property], mod.formatize) }
         end
         widget[:properties].each do |property, format|
-          @awesome.widget_tell(screen, statusbar, widget[:identifier], property, mod.formatize(format))
+          Thread.new { @awesome.widget_tell(screen, statusbar, widget[:identifier], property, mod.formatize(format)) }
         end
       rescue WidgetError => e
         @log.error(widget[:module]) { e.message }

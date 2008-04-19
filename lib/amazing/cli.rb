@@ -253,22 +253,24 @@ module Amazing
     end
 
     def update_widget(screen, statusbar, widget, iteration=0)
+      threads = []
       @log.debug("Updating widget #{widget[:identifier]} of type #{widget[:module]} on screen #{screen}")
       begin
         mod = Widgets.const_get(widget[:module]).new(widget.merge(:iteration => iteration))
         if widget[:properties].empty?
-          Thread.new(screen, statusbar, widget, mod) do |screen, statusbar, widget, mod|
+          threads << Thread.new(screen, statusbar, widget, mod) do |screen, statusbar, widget, mod|
             @awesome.widget_tell(screen, statusbar, widget[:identifier], widget[:property], mod.formatize)
           end
         end
         widget[:properties].each do |property, format|
-          Thread.new(screen, statusbar, widget, property, mod, format) do |screen, statusbar, widget, property, mod, format|
+          threads << Thread.new(screen, statusbar, widget, property, mod, format) do |screen, statusbar, widget, property, mod, format|
             @awesome.widget_tell(screen, statusbar, widget[:identifier], property, mod.formatize(format))
           end
         end
       rescue WidgetError => e
         @log.error(widget[:module]) { e.message }
       end
+      threads.each {|t| t.join }
     end
   end
 end

@@ -8,8 +8,11 @@ module Amazing
 
       def initialize(config=nil, &block)
         @awesome_statusbars = []
-        @relative_path = File.dirname(config)
-        import(config)
+        if config
+          config = File.expand_path(config)
+          @relative_path = File.dirname(config)
+          import(config)
+        end
         import(&block)
       end
 

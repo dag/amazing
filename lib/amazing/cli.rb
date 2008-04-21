@@ -1,18 +1,12 @@
 # Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
 # Licensed under the Academic Free License version 3.0
 
-require 'logger'
-require 'amazing/options'
-require 'amazing/x11/display_name'
-require 'amazing/config'
-require 'amazing/string'
-require 'amazing/widget'
-require 'amazing/proc_file'
-require 'amazing/widgets'
-require 'amazing/awesome'
-require 'timeout'
+require 'amazing'
 require 'fileutils'
+require 'logger'
 require 'thread'
+require 'timeout'
+require 'yaml'
 
 module Amazing
 
@@ -21,6 +15,7 @@ module Amazing
   #   CLI.run(ARGV)
   class CLI
     def initialize(args)
+      $KCODE = "utf-8"
       @args = args
       @log = Logger.new(STDOUT)
       @options = Options.new(@args)

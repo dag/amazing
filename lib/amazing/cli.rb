@@ -15,6 +15,7 @@ module Amazing
   #   CLI.run(ARGV)
   class CLI
     def initialize(args)
+      $KCODE = "utf-8"
       @args = args
       @log = Logger.new(STDOUT)
       @options = Options.new(@args)

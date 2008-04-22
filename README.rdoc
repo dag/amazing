@@ -20,6 +20,7 @@ Widgets included in the core:
 *Maildir*:: Mail count in maildirs
 *Memory*:: Various memory related data
 *NetTraffic*:: Network traffic information
+*Noop*:: Does nothing
 *Pacman*:: Available upgrades in the Pacman package manager
 *Raggle*:: Unread posts in raggle
 

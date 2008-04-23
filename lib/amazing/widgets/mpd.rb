@@ -72,6 +72,18 @@ module Amazing
 
       private
 
+      def playing?
+        @state == :playing
+      end
+
+      def paused?
+        @state == :paused
+      end
+
+      def stopped?
+        @state == :stopped
+      end
+
       def get_socket
         @@connections ||= {}
         mpd = nil

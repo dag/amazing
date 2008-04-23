@@ -22,5 +22,19 @@ module Amazing
         @percentage = (remaining * 100) / lastfull.to_f
       end
     end
+
+    private
+
+    def charged?
+      @state == :charged
+    end
+
+    def charging?
+      @state == :charging
+    end
+
+    def discharging?
+      @state == :discharging
+    end
   end
 end

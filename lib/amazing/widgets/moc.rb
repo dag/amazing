@@ -50,6 +50,20 @@ module Amazing
         @bitrate = moc["Bitrate"]
         @rate = moc["Rate"]
       end
+
+      private
+
+      def playing?
+        @state == :playing
+      end
+
+      def paused?
+        @state == :paused
+      end
+
+      def stopped?
+        @state == :stopped
+      end
     end
   end
 end

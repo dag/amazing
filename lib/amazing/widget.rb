@@ -1,6 +1,8 @@
 # Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
 # Licensed under the Academic Free License version 3.0
 
+require 'erb'
+
 module Amazing
 
   # Raised by widgets, and is then rescued and logged
@@ -22,6 +24,8 @@ module Amazing
   #     end
   #   end
   class Widget
+    include ERB::Util
+
     def initialize(opts={})
       self.class.dependencies.each do |name, description|
         begin
@@ -105,7 +109,7 @@ module Amazing
     end
 
     def formatize(format=nil)
-      case format
+      ERB.new(case format
       when Proc
         instance_eval(&format)
       when String
@@ -117,7 +121,7 @@ module Amazing
         when String
           instance_eval(self.class.default)
         end
-      end
+      end.to_s).result(binding())
     end
   end
 end

@@ -51,7 +51,7 @@ module Amazing
       explicit_updates unless @options[:update] == []
       stop_process
       save_pid
-      update_non_interval
+      @threads << Thread.new { update_non_interval }
       @config[:awesome].each do |awesome|
         awesome[:widgets].each do |widget|
           if widget[:interval]
@@ -242,7 +242,6 @@ module Amazing
           end
         end
       end
-      @threads.each {|t| t.join }
     end
 
     def update_widget(screen, statusbar, widget, iteration=0)

@@ -1,6 +1,7 @@
 # Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>
 # Licensed under the Academic Free License version 3.0
 
+require 'amazing/helpers/pango_markup'
 require 'erb'
 
 module Amazing
@@ -24,6 +25,7 @@ module Amazing
   #     end
   #   end
   class Widget
+    include Helpers::PangoMarkup
     include ERB::Util
 
     def initialize(opts={})

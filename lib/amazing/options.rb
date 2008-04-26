@@ -6,56 +6,11 @@ require 'optparse'
 module Amazing
 
   # Parse and manage command line options
-  class Options
-    include Enumerable
-
-    def initialize(args)
-      @options = {}
-      @options[:config] = Dir["#{ENV["HOME"]}/.amazing/config.{rb,yml,yaml}"][0]
-      @options[:loglevel] = "info"
-      @options[:include] = []
-      @options[:autoinclude] = true
-      @options[:update] = []
+  class Options < Hash
+    def initialize(args=ARGV)
       @args = args
-      @parser = OptionParser.new do |opts|
-        opts.on("-c", "--config FILE", "Configuration file (~/.amazing/config.{rb,yml,yaml})") do |config|
-          @options[:config] = config
-        end
-        opts.on("-l", "--log-level LEVEL", "Severity threshold (info)") do |level|
-          @options[:loglevel] = level
-        end
-        opts.on("-s", "--stop", "Stop the running amazing process") do
-          @options[:stop] = true
-        end
-        opts.on("-i", "--include SCRIPT", "Include a widgets script") do |script|
-          @options[:include] << script
-        end
-        opts.on("--no-auto-include", "Don't auto include from ~/.amazing/widgets/") do
-          @options[:autoinclude] = false
-        end
-        opts.on("-u", "--update [WIDGET]", "Update a widget and exit") do |widget|
-          if widget
-            @options[:update] << widget
-          else
-            @options[:update] = :all
-          end
-        end
-        opts.on("-w", "--list-widgets [WIDGET]", "List available widgets or options and fields for a widget") do |widget|
-          @options[:listwidgets] = widget || true
-        end
-        opts.on("-t", "--test-widget WIDGET [OPTIONS]", "Dump field values for a widget configured with inline YAML") do |widget|
-          @options[:test] = widget
-        end
-        opts.on("-h", "--help", "You're looking at it") do
-          @options[:help] = true
-        end
-      end
-    end
-
-    def each
-      @options.keys.each do |key|
-        yield key
-      end
+      initialize_defaults
+      initialize_parser
     end
 
     def parse(args=@args)
@@ -66,12 +21,58 @@ module Amazing
       @parser.help
     end
 
-    def [](option)
-      @options[option]
+    private
+
+    def initialize_defaults
+      self[:config] = Dir["#{ENV["HOME"]}/.amazing/config.{rb,yml,yaml}"][0]
+      self[:loglevel] = "info"
+      self[:include] = []
+      self[:autoinclude] = true
+      self[:update] = []
     end
 
-    def []=(option, value)
-      @options[option] = value
+    def initialize_parser
+      @parser = OptionParser.new do |opts|
+        opts.on("-c", "--config FILE", "Configuration file (~/.amazing/config.{rb,yml,yaml})") do |config|
+          self[:config] = config
+        end
+
+        opts.on("-l", "--log-level LEVEL", "Severity threshold (info)") do |level|
+          self[:loglevel] = level
+        end
+
+        opts.on("-s", "--stop", "Stop the running amazing process") do
+          self[:stop] = true
+        end
+
+        opts.on("-i", "--include SCRIPT", "Include a widgets script") do |script|
+          self[:include] << script
+        end
+
+        opts.on("--no-auto-include", "Don't auto include from ~/.amazing/widgets/") do
+          self[:autoinclude] = false
+        end
+
+        opts.on("-u", "--update [WIDGET]", "Update a widget and exit") do |widget|
+          if widget
+            self[:update] << widget
+          else
+            self[:update] = :all
+          end
+        end
+
+        opts.on("-w", "--list-widgets [WIDGET]", "List available widgets or options and fields for a widget") do |widget|
+          self[:listwidgets] = widget || true
+        end
+
+        opts.on("-t", "--test-widget WIDGET [OPTIONS]", "Dump field values for a widget configured with inline YAML") do |widget|
+          self[:test] = widget
+        end
+
+        opts.on("-h", "--help", "You're looking at it") do
+          self[:help] = true
+        end
+      end
     end
   end
 end

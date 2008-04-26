@@ -48,6 +48,10 @@ Configuration of amazing is {documented at the wiki}[http://github.com/dag/amazi
 *GitHub*:: http://github.com/dag/amazing
 *Gitorious*:: http://gitorious.org/projects/amazing
 
+== Mail list
+
+<b>amazing-talk</b>:: http://groups.google.com/group/amazing-talk
+
 == Copying
 
   Copyright (C) 2008 Dag Odenhall <dag.odenhall@gmail.com>

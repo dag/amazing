@@ -15,7 +15,7 @@ module Amazing
 
       def cmd_stop_process
         if @options[:stop]
-          stop_process(true)
+          stop_process(false)
           exit
         end
       end

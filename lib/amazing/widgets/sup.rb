@@ -14,7 +14,7 @@ module Amazing
       description "Mail count in sup for the specified search terms"
       dependency "sup", "gem install sup, http://sup.rubyforge.org/"
       option :terms, "Search terms", "label:inbox -label:deleted -label:spam"
-      field :count, "Numer of messages matching search terms"
+      field :count, "Number of messages matching search terms"
       default { @count }
 
       init do

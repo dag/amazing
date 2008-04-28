@@ -92,7 +92,7 @@ module Amazing
     def load_scripts
       scripts = @options[:include]
       @config["include"].each do |script|
-        script = "#{File.dirname(@options[:config])}/#{script}" if script[0] != ?/
+        script = File.expand_path(script, File.dirname(@options[:config]))
         scripts << script
       end
       if @options[:autoinclude]

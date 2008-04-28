@@ -14,7 +14,7 @@ module Amazing
       init do
         raise WidgetError, "No directories configured" unless @directories
         @directories.each do |glob|
-          glob = "#{ENV["HOME"]}/#{glob}" if glob[0] != ?/
+          glob = ::File.expand_Path(glob, "~")
           @count += Dir["#{glob}/*"].size
         end
       end

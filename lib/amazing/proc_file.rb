@@ -12,7 +12,7 @@ module Amazing
     include Enumerable
 
     def self.parse_file(file)
-      file = "/proc/#{file}" if file[0] != ?/
+      file = File.expand_path(file, "/proc")
       new(File.new(file))
     end
 

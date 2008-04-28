@@ -19,7 +19,7 @@ module Amazing
       default { @last }
 
       init do
-        @file = "#{ENV["HOME"]}/#@file" if @file[0] != ?/
+        @file = ::File.expand_path(@file, "~")
         @lines = ::File.readlines(@file).map {|line| line.chomp }
         @first = @lines.first || ""
         @last = @lines.last || ""

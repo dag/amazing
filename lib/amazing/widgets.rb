@@ -18,6 +18,7 @@ require 'amazing/widgets/net_traffic'
 require 'amazing/widgets/noop'
 require 'amazing/widgets/pacman'
 require 'amazing/widgets/raggle'
+require 'amazing/widgets/sup'
 
 module Amazing
   module Widgets

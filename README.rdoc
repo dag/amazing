@@ -23,6 +23,7 @@ Widgets included in the core:
 *Noop*:: Does nothing
 *Pacman*:: Available upgrades in the Pacman package manager
 *Raggle*:: Unread posts in raggle
+*Sup*:: Mail count in sup for the specified search terms
 
 == Installation procedures
 

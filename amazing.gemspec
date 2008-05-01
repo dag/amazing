@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.files = Dir['lib/**/*.rb'] + Dir['bin/*'] + ['LICENSE']
   s.executables = ['amazing']
   s.has_rdoc = true
-  s.extra_rdoc_files = ['README.rdoc', 'COPYING']
+  s.extra_rdoc_files = ['README.rdoc']
   s.rdoc_options << '--main' << 'README.rdoc' <<
                     '--charset' << 'utf-8' <<
                     '--inline-source' << '--line-numbers' <<

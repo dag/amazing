@@ -53,6 +53,9 @@ Configuration of amazing is {documented at the wiki}[http://github.com/dag/amazi
 
 <b>amazing-talk</b>:: http://groups.google.com/group/amazing-talk
 
+== Issues
+*Lighthouse*:: http://amazing.lighthouseapp.com
+
 == Copying
 
 Copyright 2008 Dag Odenhall <dag.odenhall@gmail.com>

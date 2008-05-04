@@ -24,6 +24,78 @@ module Amazing
         end
       end
 
+      def cmd_scaffold
+        if @options[:scaffold]
+          list = {}
+          screen, statusbar = nil, nil
+
+          File.readlines(@options[:scaffold]).each do |line|
+            case line
+
+            when /^\s*screen .*(\d+)/
+              screen = $1.to_i
+              list[screen] = {}
+
+            when /^\s*statusbar[" ]*([^"\n ]+)/
+              statusbar = $1
+              list[screen][statusbar] = []
+
+            when /^\s*(graph|iconbox|progressbar|textbox)[" ]*([^"\n ]+)/
+              list[screen][statusbar] << [$1, $2]
+
+            when /^\s*data[" ]*([^"\n ]+)/
+              list[screen][statusbar][-1] << $1
+
+            end
+          end
+
+          list.each do |screen, statusbars|
+            statusbars.each do |statusbar, widgets|
+
+              puts "awesome {"
+              puts "#{'# ' if screen == 0}  set :screen => %s" % screen
+              puts "#{'# ' if statusbar == "mystatusbar"}  set :statusbar => %s" % statusbar.inspect
+              puts
+
+              widgets.each do |widget|
+                type, name, datas = widget[0], widget[1], widget[2..-1]
+                noop = !Amazing::Widgets.constants.include?(name.camel_case)
+
+                puts "  widget(%s) {" % name.inspect
+                puts "    set :module => :noop" if noop
+                puts "#     set :module => %s" % name.to_sym.inspect unless noop
+                puts '    set :property => "image"' if type == "iconbox"
+                puts '#     set :property => "text"' if type == "textbox"
+                puts "    set :property => \"data %s\"" % datas[0] if datas.size == 1
+                puts "    set :interval => 1"
+
+                Amazing::Widgets.const_get(name.camel_case).options.each do |option, data|
+                  puts "#     set %s => %s" % [option.inspect, data[:default].inspect]
+                end unless noop
+
+                if datas.size > 1
+                  puts
+                  datas.each do |data|
+                    puts "    property(\"data %s\") {" % data
+                    puts "      @default"
+                    puts "    }"
+                    puts unless data == datas.last
+                  end
+                end
+
+                puts "  }"
+                puts unless name == widgets.last[1]
+              end
+
+              puts "}"
+              puts
+            end
+          end
+
+          exit
+        end
+      end
+
       def cmd_stop_process
         if @options[:stop]
           stop_process(false)

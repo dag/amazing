@@ -48,6 +48,10 @@ module Amazing
           self[:config] = config
         end
 
+        opts.on("-g", "--scaffold [AWESOMERC]", "Generate a scaffold config") do |awesomerc|
+          self[:scaffold] = awesomerc || File.expand_path("~/.awesomerc")
+        end
+
         opts.on("-l", "--log-level LEVEL", "Severity threshold (info)") do |level|
           self[:loglevel] = level
         end

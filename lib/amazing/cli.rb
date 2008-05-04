@@ -46,6 +46,7 @@ module Amazing
     def run
       parse_options
       cmd_show_help
+      cmd_scaffold
       set_loglevel
       cmd_stop_process
       load_scripts

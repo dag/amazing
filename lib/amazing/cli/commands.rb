@@ -185,7 +185,7 @@ module Amazing
       def cmd_test_widget
         if @options[:test]
           widget = Widgets.const_get(@options[:test].camel_case)
-          settings = YAML.load("{#{ARGV[0]}}")
+          settings = eval("{#{ARGV[0]}}")
           instance = widget.new(settings)
           longest_field_name = widget.fields.merge({:default => nil}).keys.inject {|a,b| a.to_s.length > b.to_s.length ? a : b }.to_s.length
 

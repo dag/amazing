@@ -35,7 +35,7 @@ module Amazing
     private
 
     def initialize_defaults
-      self[:config] = Dir["#{ENV["HOME"]}/.amazing/config.{rb,yml,yaml}"][0]
+      self[:config] = Dir["#{ENV["HOME"]}/.amazing/config.rb"][0]
       self[:loglevel] = "info"
       self[:include] = []
       self[:autoinclude] = true
@@ -44,7 +44,7 @@ module Amazing
 
     def initialize_parser
       @parser = OptionParser.new do |opts|
-        opts.on("-c", "--config FILE", "Configuration file (~/.amazing/config.{rb,yml,yaml})") do |config|
+        opts.on("-c", "--config FILE", "Configuration file (~/.amazing/config.rb)") do |config|
           self[:config] = config
         end
 
@@ -80,7 +80,7 @@ module Amazing
           self[:listwidgets] = widget || true
         end
 
-        opts.on("-t", "--test-widget WIDGET [OPTIONS]", "Dump field values for a widget configured with inline YAML") do |widget|
+        opts.on("-t", "--test-widget WIDGET [OPTIONS]", "Dump field values for a widget") do |widget|
           self[:test] = widget
         end
 

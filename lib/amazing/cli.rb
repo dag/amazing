@@ -20,7 +20,6 @@ require 'fileutils'
 require 'logger'
 require 'thread'
 require 'timeout'
-require 'yaml'
 
 module Amazing
 

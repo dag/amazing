@@ -1,5 +1,6 @@
 require 'amazing/string'
 require 'amazing/config/dsl'
+require 'amazing/widgets'
 
 module Amazing
   class Config < Hash
@@ -26,6 +27,9 @@ module Amazing
           self[:awesome][-1][:widgets][-1][:module] ||= widget.identifier
           self[:awesome][-1][:widgets][-1][:property] ||= "text"
           self[:awesome][-1][:widgets][-1][:module] = self[:awesome][-1][:widgets][-1][:module].to_s.camel_case
+          unless Widgets.constants.include?(self[:awesome][-1][:widgets][-1][:module])
+            self[:awesome][-1][:widgets][-1][:module] = "Noop"
+          end
         end
       end
     end

@@ -46,7 +46,12 @@ module Amazing
         begin
           require name
         rescue LoadError
-          raise WidgetError, "Missing dependency #{name.inspect}#{if description then " [#{description}]" end}"
+          begin
+            require 'rubygems'
+            require name
+          rescue LoadError
+            raise WidgetError, "Missing dependency #{name.inspect}#{if description then " [#{description}]" end}"
+          end
         end
       end
       self.class.options.each do |key, value|

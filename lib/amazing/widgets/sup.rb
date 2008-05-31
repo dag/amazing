@@ -14,11 +14,6 @@
 
 require 'amazing/widget'
 
-begin
-  require 'rubygems'
-rescue LoadError
-end
-
 module Amazing
   module Widgets
     class Sup < Widget

@@ -12,14 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'amazing/awesome'
-require 'amazing/cli'
-require 'amazing/config'
-require 'amazing/lazy'
-require 'amazing/numeric'
-require 'amazing/options'
-require 'amazing/proc_file'
-require 'amazing/string'
-require 'amazing/widget'
-require 'amazing/widgets'
-require 'amazing/x11'
+module Amazing
+  class Lazy
+    def initialize(&block)
+      @block = block
+    end
+
+    def to_s
+      @value ||= @block.call.to_s
+    end
+
+    alias inspect to_s
+
+    def method_missing(name, *args, &block)
+      to_s.__send__(name, *args, &block)
+    end
+  end
+end

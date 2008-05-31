@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'amazing/helpers/lazy_data'
 require 'amazing/helpers/pango_markup'
 require 'erb'
 
@@ -36,6 +37,7 @@ module Amazing
   #     end
   #   end
   class Widget
+    include Helpers::LazyData
     include Helpers::PangoMarkup
     include ERB::Util
 

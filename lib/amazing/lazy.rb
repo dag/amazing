@@ -14,18 +14,21 @@
 
 module Amazing
   class Lazy
+    undef_method :to_s
+    undef_method :inspect
+
     def initialize(&block)
-      @block = block
+      @lazy_block = block
     end
-
-    def to_s
-      @value ||= @block.call.to_s
-    end
-
-    alias inspect to_s
 
     def method_missing(name, *args, &block)
-      to_s.__send__(name, *args, &block)
+      __value__.__send__(name, *args, &block)
+    end
+
+    private
+
+    def __value__
+      @lazy_value ||= @lazy_block.call
     end
   end
 end

@@ -225,7 +225,7 @@ module Amazing
                 iteration = 1
 
                 loop do
-                  Thread.new { update_widget(awesome[:screen], awesome[:statusbar], widget, iteration) }
+                  update_widget(awesome[:screen], awesome[:statusbar], widget, iteration)
 
                   iteration += 1
                   sleep widget[:interval]

@@ -112,43 +112,34 @@ module Amazing
       end
 
       def update_non_interval
-        @threads << Thread.new do
-          @config[:awesome].each do |awesome|
-            awesome[:widgets].each do |widget|
-              next if widget[:interval]
+        @config[:awesome].each do |awesome|
+          awesome[:widgets].each do |widget|
+            next if widget[:interval]
 
-              @threads << Thread.new(awesome, widget) do |awesome, widget|
-                update_widget(awesome[:screen], awesome[:statusbar], widget)
-              end
+            @threads << Thread.new(awesome, widget) do |awesome, widget|
+              update_widget(awesome[:screen], awesome[:statusbar], widget)
             end
           end
         end
       end
 
       def update_widget(screen, statusbar, widget, iteration=0)
-        threads = []
         @log.debug("Updating widget #{widget[:identifier]} of type #{widget[:module]} on screen #{screen}")
 
         begin
           mod = Widgets.const_get(widget[:module]).new(widget.merge(:iteration => iteration))
 
           if widget[:properties].empty?
-            threads << Thread.new(screen, statusbar, widget, mod) do |screen, statusbar, widget, mod|
-              @awesome.widget_tell(screen, statusbar, widget[:identifier], widget[:property], mod.formatize)
-            end
+            @awesome.widget_tell(screen, statusbar, widget[:identifier], widget[:property], mod.formatize)
           end
 
           widget[:properties].each do |property, format|
-            threads << Thread.new(screen, statusbar, widget, property, mod, format) do |screen, statusbar, widget, property, mod, format|
-              @awesome.widget_tell(screen, statusbar, widget[:identifier], property, mod.formatize(format))
-            end
+            @awesome.widget_tell(screen, statusbar, widget[:identifier], property, mod.formatize(format))
           end
 
         rescue WidgetError => e
           @log.error(widget[:module]) { e.message }
         end
-
-        threads.each {|t| t.join }
       end
 
       def join_threads
